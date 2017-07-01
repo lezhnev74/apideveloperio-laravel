@@ -9,5 +9,21 @@
             "email": "lezhnev.work@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "illuminate/support": "5.4.*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.4",
+        "phpunit/phpunit": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "HttpAnalyzer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HttpAnalyzerTest\\": "tests/"
+        }
+    }
 }
