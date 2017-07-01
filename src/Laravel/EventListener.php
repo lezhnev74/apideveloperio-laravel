@@ -6,12 +6,18 @@ declare(strict_types=1);
 
 namespace HttpAnalyzer\Laravel;
 
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 
 class EventListener
 {
-    public function handle(RequestHandled $event)
+    public function onRequestHandled(RequestHandled $event)
     {
-        dump('event listener called');
+        dump('requestHandled event heard');
+    }
+    
+    public function onDatabaseQueryExecuted(QueryExecuted $event)
+    {
+        dump('queryExecuted event heard');
     }
 }
