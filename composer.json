@@ -1,0 +1,13 @@
+{
+    "name": "lezhnev74/http-analyzer-laravel-adapter",
+    "description": "Laravel API adapter to track each http request app handled",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitriy Lezhnev",
+            "email": "lezhnev.work@gmail.com"
+        }
+    ],
+    "require": {}
+}
