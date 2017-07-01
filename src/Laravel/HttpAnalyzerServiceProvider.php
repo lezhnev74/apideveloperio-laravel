@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HttpAnalyzer;
+namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Http\Events\RequestHandled;
@@ -17,7 +17,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/http_analyzer.php' => config_path('http_analyzer.php'),
+            __DIR__ . '/../../config/http_analyzer.php' => config_path('http_analyzer.php'),
         ]);
         
         
@@ -34,7 +34,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/http_analyzer.php', 'http_analyzer'
+            __DIR__ . '/../../config/http_analyzer.php', 'http_analyzer'
         );
     }
 }

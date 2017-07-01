@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace HttpAnalyzerTest;
 
-use HttpAnalyzer\HttpAnalyzerServiceProvider;
+use HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 abstract class LaravelApp extends TestCase

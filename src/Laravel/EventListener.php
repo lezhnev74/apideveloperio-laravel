@@ -4,7 +4,7 @@
  */
 declare(strict_types=1);
 
-namespace HttpAnalyzer;
+namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
 
