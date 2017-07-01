@@ -6,6 +6,7 @@ namespace HttpAnalyzer\Laravel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\ServiceProvider;
 
 final class HttpAnalyzerServiceProvider extends ServiceProvider
@@ -26,6 +27,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $event = app(Dispatcher::class);
         $event->listen(RequestHandled::class, EventListener::class . '@onRequestHandled');
         $event->listen(QueryExecuted::class, EventListener::class . '@onDatabaseQueryExecuted');
+        $event->listen(MessageLogged::class, EventListener::class . '@onLog');
     }
     
     /**

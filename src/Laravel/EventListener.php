@@ -8,6 +8,7 @@ namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Log\Events\MessageLogged;
 
 /**
  * This class will record events and keep data in memory until request is complete and then
@@ -41,5 +42,10 @@ class EventListener
             "type" => "database",
             "vendor" => $vendor,
         ];
+    }
+    
+    public function onLog(MessageLogged $event)
+    {
+        //MessageLogged($level, $message, $context)
     }
 }
