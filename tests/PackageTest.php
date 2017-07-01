@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HttpAnalyzerTest;
 
 use HttpAnalyzer\Laravel\EventListener;
+use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseManager;
@@ -59,4 +60,22 @@ final class PackageTest extends LaravelApp
         app()['log']->alert("message", ['a' => 2]);
     }
     
+    function test_it_dumps_data_to_file()
+    {
+        /** @var Repository $config */
+        $config           = app()[Repository::class];
+        $tmp_storage_path = __DIR__ . "/tmp/" . time();
+        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        
+        $event = new RequestHandled(new Request(), new Response());
+        app(Dispatcher::class)->dispatch($event);
+        
+        // Make sure file is there
+        $this->assertDirectoryExists($tmp_storage_path);
+        $this->assertFileExists($tmp_storage_path . "/recorded_requests");
+        
+        // clean up
+        unlink($tmp_storage_path . "/recorded_requests");
+        rmdir($tmp_storage_path);
+    }
 }

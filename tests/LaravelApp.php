@@ -15,4 +15,5 @@ abstract class LaravelApp extends TestCase
     {
         return [HttpAnalyzerServiceProvider::class];
     }
+    
 }
