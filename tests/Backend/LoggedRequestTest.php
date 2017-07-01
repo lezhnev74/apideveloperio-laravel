@@ -30,7 +30,17 @@ final class LoggedRequestTest extends TestCase
         
         $response = new Response('', 200);
         
-        $logged_request = new LoggedRequest($request, $response, 100);
+        $logged_request = new LoggedRequest(
+            $request,
+            $response,
+            100,
+            null,
+            null,
+            LoggedRequest::LOG_MODE_SKIP_REQUEST_HEADERS |
+            LoggedRequest::LOG_MODE_SKIP_REQUEST_BODY |
+            LoggedRequest::LOG_MODE_SKIP_RESPONSE_BODY |
+            LoggedRequest::LOG_MODE_SKIP_RESPONSE_HEADERS
+        );
         $data           = $logged_request->toArray();
         
         $this->assertEquals(
@@ -79,7 +89,20 @@ final class LoggedRequestTest extends TestCase
         // Now produce logged packet with data (which can be sent to API backend)
         //
         
-        $logged_request = new LoggedRequest($request, $response, 100, "line1\nline2\n");
+        $logged_request = new LoggedRequest(
+            $request,
+            $response,
+            100,
+            "line1\nline2\n",
+            [
+                [
+                    "type" => "database",
+                    "vendor" => "mysql",
+                    "ttr_ms" => 57,
+                    "query" => "SELECT * FROM USERS;",
+                ],
+            ]
+        );
         $data           = $logged_request->toArray();
         
         
@@ -113,6 +136,7 @@ final class LoggedRequestTest extends TestCase
                     "content-type" => "text/html",
                     "date" => 1497847023,
                 ],
+                "log" => "line1\nline2\n",
                 "external_queries" => [
                     [
                         "type" => "database",
@@ -121,7 +145,6 @@ final class LoggedRequestTest extends TestCase
                         "query" => "SELECT * FROM USERS;",
                     ],
                 ],
-                "log" => "line1\nline2\n",
             ],
             $data
         );

@@ -6,6 +6,7 @@ namespace HttpAnalyzerTest;
 use HttpAnalyzer\Laravel\EventListener;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
@@ -39,4 +40,5 @@ final class PackageTest extends LaravelApp
         
         app(Dispatcher::class)->dispatch($event);
     }
+    
 }
