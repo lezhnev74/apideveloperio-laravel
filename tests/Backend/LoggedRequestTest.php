@@ -23,6 +23,7 @@ final class LoggedRequestTest extends TestCase
             [],
             [
                 'REMOTE_ADDR' => '192.167.35.22',
+                'SERVER_ADDR' => '127.0.0.1',
                 'REQUEST_TIME' => 1497847022,
                 'HTTP_USER_AGENT' => 'Mozilla Firefox',
             ]
@@ -52,6 +53,10 @@ final class LoggedRequestTest extends TestCase
                 "ttr_ms" => 100,
                 "timestamp" => 1497847022,
                 "http_response_code" => 200,
+                "server" => [
+                    "hostname" => gethostname(),
+                    "ip" => "127.0.0.1",
+                ],
             ],
             $data
         );
@@ -70,6 +75,7 @@ final class LoggedRequestTest extends TestCase
             [],
             [],
             [
+                'SERVER_ADDR' => '127.0.0.1',
                 'REMOTE_ADDR' => '192.167.35.22',
                 'REQUEST_TIME' => 1497847022,
                 'HTTP_USER_AGENT' => 'Mozilla Firefox',
@@ -105,7 +111,6 @@ final class LoggedRequestTest extends TestCase
         );
         $data           = $logged_request->toArray();
         
-        
         //
         // Assert that packet has expected format
         //
@@ -120,6 +125,10 @@ final class LoggedRequestTest extends TestCase
                 "timestamp" => 1497847022,
                 "http_response_code" => 200,
                 
+                "server" => [
+                    "hostname" => gethostname(),
+                    "ip" => "127.0.0.1",
+                ],
                 "http_request_body" => "I know you can see it",
                 "http_request_headers" => [
                     "accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",

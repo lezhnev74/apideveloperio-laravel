@@ -40,6 +40,7 @@ final class LoggedRequest
         
         $this->fillRequestData($request);
         $this->fillResponseData($response);
+        $this->fillServerData($request);
         
         // Append other data
         $this->data['ttr_ms'] = $time_to_response_ms;
@@ -87,6 +88,14 @@ final class LoggedRequest
                 $this->data['http_response_headers'][$name] = $response->headers->get($name);
             }
         }
+    }
+    
+    private function fillServerData(Request $request)
+    {
+        $this->data['server'] = [
+            "hostname" => gethostname(),
+            "ip" => $request->server->get('SERVER_ADDR'),
+        ];
     }
     
     public function toArray()

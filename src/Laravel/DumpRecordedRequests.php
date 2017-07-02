@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace HttpAnalyzer\Laravel;
 
-use GuzzleHttp\Client;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Logging\Log;
