@@ -13,10 +13,8 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Log\Events\MessageLogged;
 use Prophecy\Argument;
 use Prophecy\Prediction\PredictionInterface;
 
@@ -29,10 +27,11 @@ final class PackageTest extends LaravelApp
         $stub                      = static::prophesize(EventListener::class);
         $app[EventListener::class] = $stub->reveal();
         
-        $event = new RequestHandled(new Request(), new Response());
-        $stub->onRequestHandled($event)->shouldBeCalled();
+        $request  = new Request();
+        $response = new Response();
+        $stub->onRequestHandled($request, $response)->shouldBeCalled();
         
-        $app[Dispatcher::class]->dispatch($event);
+        $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
     }
     
     function test_it_subscribed_on_query_executed_event()
@@ -50,7 +49,7 @@ final class PackageTest extends LaravelApp
         );
         $stub->onDatabaseQueryExecuted($event)->shouldBeCalled();
         
-        $app[Dispatcher::class]->dispatch($event);
+        $app[Dispatcher::class]->fire('', $event);
     }
     
     function test_it_subscribed_on_new_message_in_log_event()
@@ -61,10 +60,10 @@ final class PackageTest extends LaravelApp
         $app[EventListener::class] = $stub->reveal();
         
         
-        $stub->onLog(Argument::that(function (MessageLogged $m) {
-            return $m->level == 'alert' &&
-                   $m->message == 'message' &&
-                   $m->context == ['a' => 2];
+        $stub->onLog(Argument::that(function (array $m) {
+            return $m['level'] == 'alert' &&
+                   $m['message'] == 'message' &&
+                   $m['context'] == ['a' => 2];
         }))->shouldBeCalled();
         
         $app['log']->alert("message", ['a' => 2]);
@@ -79,8 +78,9 @@ final class PackageTest extends LaravelApp
         $tmp_storage_path = __DIR__ . "/tmp/" . time();
         $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
         
-        $event = new RequestHandled(new Request(), new Response());
-        $app[Dispatcher::class]->dispatch($event);
+        $request  = new Request();
+        $response = new Response();
+        $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         
         // Make sure file is there
         $this->assertDirectoryExists($tmp_storage_path);

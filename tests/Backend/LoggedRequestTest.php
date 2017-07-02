@@ -172,7 +172,7 @@ final class LoggedRequestTest extends TestCase
                     ],
                     [
                         "name" => "cache-control",
-                        "value" => "no-cache, private",
+                        "value" => "no-cache",
                     ],
                 ],
                 "log" => "line1\nline2\n",

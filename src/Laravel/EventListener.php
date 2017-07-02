@@ -6,11 +6,12 @@ declare(strict_types=1);
 
 namespace HttpAnalyzer\Laravel;
 
+
 use HttpAnalyzer\Backend\LoggedRequest;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /**
  * This class will record events and keep data in memory until request is complete and then
@@ -36,7 +37,7 @@ class EventListener
     public function __construct(Repository $config_repo) { $this->config_repo = $config_repo; }
     
     
-    public function onRequestHandled(RequestHandled $event)
+    public function onRequestHandled(Request $request, Response $response)
     {
         
         // If possible - calculate time duration
@@ -49,8 +50,8 @@ class EventListener
         //
         
         $logged_request = new LoggedRequest(
-            $event->request,
-            $event->response,
+            $request,
+            $response,
             $time_to_response,
             implode("\n", $this->recorded_data['log_entries']),
             $this->recorded_data['external_queries'],
@@ -78,11 +79,11 @@ class EventListener
         ];
     }
     
-    public function onLog(MessageLogged $event)
+    public function onLog(array $event)
     {
-        $this->recorded_data['log_entries'][] = $event->message .
+        $this->recorded_data['log_entries'][] = $event['message'] .
                                                 " context: " .
-                                                serialize($event->context);
+                                                serialize($event['context']);
     }
     
     
