@@ -66,14 +66,14 @@ final class LoggedRequest
             foreach ($request->headers->keys() as $name) {
                 $this->data['http_request_headers'][] = [
                     'name' => $name,
-                    'value' => $request->headers->get($name),
+                    'value' => substr((string)$request->headers->get($name), 0, 10250),
                 ];
             }
         }
         
         if (!($this->mode & self::LOG_MODE_SKIP_REQUEST_BODY)) {
             // TODO stream body type?
-            $this->data['http_request_body'] = $request->getContent();
+            $this->data['http_request_body'] = substr((string)$request->getContent(), 0, 65535);
         }
         
         if (count($request->allFiles())) {
@@ -93,7 +93,7 @@ final class LoggedRequest
         $this->data['http_response_code'] = $response->getStatusCode();
         
         if (!($this->mode & self::LOG_MODE_SKIP_RESPONSE_BODY)) {
-            $this->data['http_response_body'] = $response->getContent();
+            $this->data['http_response_body'] = substr((string)$response->getContent(), 0, 65535);
         }
         
         if (!($this->mode & self::LOG_MODE_SKIP_RESPONSE_HEADERS)) {
@@ -101,7 +101,7 @@ final class LoggedRequest
             foreach ($response->headers->keys() as $name) {
                 $this->data['http_response_headers'][] = [
                     'name' => $name,
-                    'value' => $response->headers->get($name),
+                    'value' => substr((string)$response->headers->get($name), 0, 10250),
                 ];
             }
         }
