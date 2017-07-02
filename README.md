@@ -1,4 +1,10 @@
-# http-analyzer-laravel-adapter
+[![Packagist](https://img.shields.io/packagist/dt/lezhnev74/http-analyzer-laravel-adapter.svg)]()
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lezhnev74/http-analyzer-laravel-adapter/master/LICENSE)
+[![Build Status](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter.svg?branch=master)](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/?branch=master)
+
+# Laravel package to dump HTTP requests to your Dashboard
 Laravel API adapter to track each http request app handled.
 
 ## Installation
