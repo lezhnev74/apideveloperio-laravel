@@ -8,6 +8,7 @@ namespace HttpAnalyzer\Backend;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -78,11 +79,12 @@ final class LoggedRequest
         
         if (count($request->allFiles())) {
             $this->data['http_request_files'] = [];
+            /** @var UploadedFile $file */
             foreach ($request->allFiles() as $file) {
                 $this->data['http_request_files'][] = [
-                    'name' => $file['name'],
-                    'size' => $file['size'],
-                    'mime' => $file['type'],
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
                 ];
             }
         }
