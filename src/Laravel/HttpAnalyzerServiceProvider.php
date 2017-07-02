@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HttpAnalyzer\Laravel;
 
+use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
@@ -22,8 +23,9 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
             __DIR__ . '/../../config/http_analyzer.php' => config_path('http_analyzer.php'),
         ]);
         
-        
-        // Resolve event dispatcher from the App
+        //
+        // Hook on events
+        //
         $event = app(Dispatcher::class);
         $event->listen(RequestHandled::class, EventListener::class . '@onRequestHandled');
         $event->listen(QueryExecuted::class, EventListener::class . '@onDatabaseQueryExecuted');
@@ -40,5 +42,21 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/http_analyzer.php', 'http_analyzer'
         );
+        
+        //
+        // Prepare Guzzle Http Client to communicate with API backend
+        //
+        $this->app->bind(GuzzleHttpClient::class, function ($app) {
+            $config = $app[Repository::class];
+            
+            $api_host = $config->get('http_analyzer.api_host', 'app.lessthan12ms.com');
+            $api_key  = $config->get('http_analyzer.api_key');
+            
+            return new GuzzleHttpClient([
+                'base_uri' => 'https://' . $api_host,
+                'http_errors' => false,
+                'query' => ['api_key' => $api_key],
+            ]);
+        });
     }
 }
