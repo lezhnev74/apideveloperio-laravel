@@ -185,4 +185,36 @@ final class LoggedRequestTest extends TestCase
             $data
         );
     }
+    
+    function test_it_stripps_header_values()
+    {
+        $request = Request::create(
+            'http://example.org/shop/cart.php?num=one&price=10',
+            'POST',
+            [], [], [], [
+                'REMOTE_ADDR' => '192.167.35.22',
+                'SERVER_ADDR' => '127.0.0.1',
+                'REQUEST_TIME' => 1497847022,
+                'HTTP_USER_AGENT' => 'Mozilla Firefox',
+            ]
+        );
+        
+        $logged_request = new LoggedRequest(
+            $request,
+            new Response('', 200),
+            100,
+            null,
+            null,
+            ['strip_header_values' => ["HOST", "cache-CONtrol"]]
+        );
+        $data           = $logged_request->toArray();
+        
+        $this->assertTrue(
+            array_search(['name' => 'host', 'value' => "__STRIPPED_VALUE__"], $data['http_request_headers']) !== false
+        );
+        $this->assertTrue(
+            array_search(['name' => 'cache-control', 'value' => "__STRIPPED_VALUE__"],
+                $data['http_response_headers']) !== false
+        );
+    }
 }

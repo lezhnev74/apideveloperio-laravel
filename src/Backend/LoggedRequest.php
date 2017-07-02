@@ -65,8 +65,11 @@ final class LoggedRequest
             foreach ($request->headers->keys() as $name) {
                 $this->data['http_request_headers'][] = [
                     'name' => $name,
-                    'value' => substr((string)$request->headers->get($name), 0, 10250),
+                    'value' => $this->stripHeaderValue($name) ?
+                        "__STRIPPED_VALUE__" :
+                        substr((string)$request->headers->get($name), 0, 10250),
                 ];
+                
             }
         }
         
@@ -102,7 +105,9 @@ final class LoggedRequest
             foreach ($response->headers->keys() as $name) {
                 $this->data['http_response_headers'][] = [
                     'name' => $name,
-                    'value' => substr((string)$response->headers->get($name), 0, 10250),
+                    'value' => $this->stripHeaderValue($name) ?
+                        "__STRIPPED_VALUE__" :
+                        substr((string)$response->headers->get($name), 0, 10250),
                 ];
             }
         }
@@ -129,6 +134,21 @@ final class LoggedRequest
         $strip_data = array_get($this->filtering_config, 'strip_data', []);
         
         return !in_array($data_name, $strip_data);
+    }
+    
+    /**
+     * Detect if config tell us to strip this header value from the recorded log
+     *
+     *
+     * @param $header_name
+     *
+     * @return bool
+     */
+    protected function stripHeaderValue($header_name)
+    {
+        $strip_headers_value = array_map('strtolower', array_get($this->filtering_config, 'strip_header_values', []));
+        
+        return in_array(strtolower($header_name), $strip_headers_value);
     }
     
     public function toArray()
