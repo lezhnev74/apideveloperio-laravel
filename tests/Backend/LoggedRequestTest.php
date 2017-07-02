@@ -131,19 +131,49 @@ final class LoggedRequestTest extends TestCase
                 ],
                 "http_request_body" => "I know you can see it",
                 "http_request_headers" => [
-                    "accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                    "accept-encoding" => "gzip, deflate, sdch, br",
-                    "accept-language" => "en-us,en;q=0.5",
-                    "accept-charset" => "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-                    "host" => "example.org",
-                    "user-agent" => "Mozilla Firefox",
-                    "content-type" => "application/x-www-form-urlencoded",
+                    [
+                        "name" => "host",
+                        "value" => "example.org",
+                    ],
+                    [
+                        "name" => "user-agent",
+                        "value" => "Mozilla Firefox",
+                    ],
+                    [
+                        "name" => "accept",
+                        "value" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                    ],
+                    [
+                        "name" => "accept-language",
+                        "value" => "en-us,en;q=0.5",
+                    ],
+                    [
+                        "name" => "accept-charset",
+                        "value" => "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+                    ],
+                    [
+                        "name" => "accept-encoding",
+                        "value" => "gzip, deflate, sdch, br",
+                    ],
+                    [
+                        "name" => "content-type",
+                        "value" => "application/x-www-form-urlencoded",
+                    ],
                 ],
                 "http_response_body" => "<a>Hello guys!</a>",
                 "http_response_headers" => [
-                    "cache-control" => "no-cache, private",
-                    "content-type" => "text/html",
-                    "date" => 1497847023,
+                    [
+                        "name" => "content-type",
+                        "value" => "text/html",
+                    ],
+                    [
+                        "name" => "date",
+                        "value" => "1497847023",
+                    ],
+                    [
+                        "name" => "cache-control",
+                        "value" => "no-cache, private",
+                    ],
                 ],
                 "log" => "line1\nline2\n",
                 "external_queries" => [
