@@ -2,6 +2,14 @@
     "name": "lezhnev74/http-analyzer-laravel-adapter",
     "description": "Laravel API adapter to track each http request app handled",
     "type": "library",
+    "tags": [
+        "http",
+        "performance",
+        "analytics",
+        "logging",
+        "request",
+        "response"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -10,6 +18,7 @@
         }
     ],
     "require": {
+        "php": ">=5.6.4",
         "illuminate/support": "5.3.*",
         "guzzlehttp/guzzle": "~6.0|~5.0"
     },

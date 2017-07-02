@@ -3,8 +3,62 @@ Laravel API adapter to track each http request app handled.
 
 ## Installation
 
+Install the package
+
+```
+composer require lezhnev74/http-analyzer-laravel-adapter
+```
+
+Run this this command to publish configuration file to your `/config` folder.
+
+```
+php artisan vendor:publish --provider="HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider"
+```
+
+Set-up cron command to dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add `DumpRecordedRequests::class` to commands list.
+
+```php
+#app/Console/Kernel.php
+....
+protected $commands = [
+    ...
+    'HttpAnalyzer\Laravel\DumpRecordedRequests\DumpRecordedRequests',
+];
+
+...
+
+protected function schedule(Schedule $schedule)
+{
+    // you can set how often you want it to dump your requests to the Dashboard
+    // every minute is the most frequent mode
+    $schedule->command('http_analyzer:dump')->everyMinute();
+}
+```
+
 ## Configuration
+After publishing, config file will be located at `config/http_analyzer.php` and speaks for himself.
+The only required configuration is to put your API Key under `api_key` field.
+
+
+## FAQ
+#### How it works?
+It hooks into Laravel app and records request, response and other data that you will see in your Dashboard:
+* incoming request
+* response
+* database queries
+* log entries
+
+You can tweak which information you would like to send to the Dashboard.
+
+The command `http_analyzer:dump` that you have set up will send all recorded requests to your Dashboard. 
+
+
+#### I see no errors on the screen, but I don't see any requests in my dashboard. Why?
+ 
+This package is designed to fail silently. If something went wrong while recording your requests - plugin won't interrupt your request lifecycle. Open your log and see if the package appended any critical information in there. 
+
+Also check the tmp storage folder if there are any stale dump files.
+ 
 
 ## Support
-Hi, I am Dmitriy!
-Email me at lezhnev.work@gmail.com to get help with this package. 
+Just open a new Issue here and get help.

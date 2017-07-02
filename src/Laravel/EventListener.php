@@ -2,7 +2,6 @@
 /**
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
-declare(strict_types=1);
 
 namespace HttpAnalyzer\Laravel;
 
