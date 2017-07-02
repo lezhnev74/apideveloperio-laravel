@@ -10,12 +10,12 @@
         }
     ],
     "require": {
-        "illuminate/support": "5.4.*"
+        "illuminate/support": "5.4.*",
+        "guzzlehttp/guzzle": "~6.0|~5.0"
     },
     "require-dev": {
         "orchestra/testbench": "^3.4",
-        "phpunit/phpunit": "^6.2",
-        "guzzlehttp/guzzle": "~6.0|~5.0"
+        "phpunit/phpunit": "^6.2"
     },
     "autoload": {
         "psr-4": {
