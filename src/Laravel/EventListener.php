@@ -40,7 +40,9 @@ class EventListener
     {
         
         // If possible - calculate time duration
-        $time_to_response = defined('LARAVEL_START') ? microtime(true) - constant('LARAVEL_START') : 1;
+        $time_to_response = defined('LARAVEL_START') ?
+            intval((microtime(true) - constant('LARAVEL_START')) * 1000) :
+            1;
         
         //
         // Prepare packet with all recorded data

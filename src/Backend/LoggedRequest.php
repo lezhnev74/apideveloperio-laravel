@@ -64,7 +64,7 @@ final class LoggedRequest
         if (!($this->mode & self::LOG_MODE_SKIP_REQUEST_HEADERS)) {
             $this->data['http_request_headers'] = [];
             foreach ($request->headers->keys() as $name) {
-                $this->data['http_request_headers'][$name] = $request->headers->get($name);
+                $this->data['http_request_headers'][$name] = (string)$request->headers->get($name);
             }
         }
         
@@ -85,7 +85,7 @@ final class LoggedRequest
         if (!($this->mode & self::LOG_MODE_SKIP_RESPONSE_HEADERS)) {
             $this->data['http_response_headers'] = [];
             foreach ($response->headers->keys() as $name) {
-                $this->data['http_response_headers'][$name] = $response->headers->get($name);
+                $this->data['http_response_headers'][$name] = (string)$response->headers->get($name);
             }
         }
     }
