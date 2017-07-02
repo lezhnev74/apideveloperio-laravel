@@ -80,11 +80,12 @@ final class LoggedRequest
         if (count($request->allFiles())) {
             $this->data['http_request_files'] = [];
             /** @var UploadedFile $file */
-            foreach ($request->allFiles() as $file) {
+            foreach ($request->allFiles() as $key => $file) {
                 $this->data['http_request_files'][] = [
-                    'name' => $file->getClientOriginalName(),
+                    'filename' => $file->getClientOriginalName(),
                     'size' => $file->getSize(),
                     'mime' => $file->getMimeType(),
+                    'fieldname' => $key,
                 ];
             }
         }
