@@ -3,19 +3,29 @@ Laravel API adapter to track each http request app handled.
 
 ## Installation
 
-Install the package
+### Version Compability
+ Laravel  | Http analyzer version
+:---------|:----------
+ 5.1.x    | 1.0.x
+ 5.2.x    | 2.0.x
+ 5.3.x    | 3.0.x
+ 5.4.x    | 4.0.x
+
+### Steps
+#### Install the package
 
 ```
-composer require lezhnev74/http-analyzer-laravel-adapter
+composer require "lezhnev74/http-analyzer-laravel-adapter=~1.0"
 ```
 
-Run this this command to publish configuration file to your `/config` folder.
+#### Run this this command to publish configuration file to your `/config` folder.
 
 ```
 php artisan vendor:publish --provider="HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider"
 ```
 
-Set-up cron command to dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add `DumpRecordedRequests::class` to commands list.
+#### Set-up cron command 
+To dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add `DumpRecordedRequests::class` to commands list.
 
 ```php
 #app/Console/Kernel.php
