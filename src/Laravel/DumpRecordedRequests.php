@@ -99,7 +99,10 @@ final class DumpRecordedRequests extends Command
             'POST',
             '/api/report/log',
             [
-                'json' => $json_data,
+                'headers' => [
+                    'content-type' => 'application/json',
+                ],
+                'body' => $json_data,
             ]
         );
         

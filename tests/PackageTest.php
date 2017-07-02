@@ -101,7 +101,10 @@ final class PackageTest extends LaravelApp
             ->request(
                 Argument::is('POST'),
                 Argument::is('/api/report/log'),
-                Argument::is(["json" => '{"requests":[{"sample"=>"data"}]}'])
+                Argument::is([
+                    "headers" => ["content-type" => "application/json"],
+                    "body" => '{"requests":[{"sample"=>"data"}]}',
+                ])
             )
             ->willReturn(
                 new \GuzzleHttp\Psr7\Response(200)
