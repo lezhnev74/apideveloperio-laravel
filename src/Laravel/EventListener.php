@@ -9,6 +9,7 @@ namespace HttpAnalyzer\Laravel;
 
 use HttpAnalyzer\Backend\LoggedRequest;
 use Illuminate\Config\Repository;
+use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,72 +30,91 @@ class EventListener
     ];
     /** @var  Repository */
     private $config_repo;
+    /** @var  Log */
+    private $log_writer;
     
     /**
      * EventListener constructor.
      *
      * @param Repository $config_repo
      */
-    public function __construct(Repository $config_repo) { $this->config_repo = $config_repo; }
+    public function __construct(Repository $config_repo, Log $log)
+    {
+        $this->config_repo = $config_repo;
+        $this->log_writer  = $log;
+    }
     
     
     public function onRequestHandled(Request $request, Response $response)
     {
-        if ($this->isRecordingDisabled()) {
-            return;
+        try {
+            if ($this->isRecordingDisabled()) {
+                return;
+            }
+            
+            // If possible - calculate time duration
+            $time_to_response = defined('LARAVEL_START') ?
+                intval((microtime(true) - constant('LARAVEL_START')) * 1000) :
+                1;
+            
+            //
+            // Prepare packet with all recorded data
+            //
+            
+            $logged_request = new LoggedRequest(
+                $request,
+                $response,
+                $time_to_response,
+                implode("\n", $this->recorded_data['log_entries']),
+                $this->recorded_data['external_queries'],
+                $this->config_repo->get('http_analyzer.filtering')
+            );
+            
+            $tmp_storage_path = $this->config_repo->get('http_analyzer.tmp_storage_path');
+            $this->saveRecordedRequest($logged_request, $tmp_storage_path);
+        } catch (\Throwable $e) {
+            $this->fail($e);
         }
-        
-        // If possible - calculate time duration
-        $time_to_response = defined('LARAVEL_START') ?
-            intval((microtime(true) - constant('LARAVEL_START')) * 1000) :
-            1;
-        
-        //
-        // Prepare packet with all recorded data
-        //
-        
-        $logged_request = new LoggedRequest(
-            $request,
-            $response,
-            $time_to_response,
-            implode("\n", $this->recorded_data['log_entries']),
-            $this->recorded_data['external_queries'],
-            $this->config_repo->get('http_analyzer.filtering')
-        );
-        
-        $tmp_storage_path = $this->config_repo->get('http_analyzer.tmp_storage_path');
-        $this->saveRecordedRequest($logged_request, $tmp_storage_path);
     }
     
     public function onDatabaseQueryExecuted(QueryExecuted $event)
     {
-        if ($this->isRecordingDisabled()) {
-            return;
+        try {
+            if ($this->isRecordingDisabled()) {
+                return;
+            }
+            
+            $pdo    = $event->connection->getPdo();
+            $vendor = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) .
+                      "/" .
+                      $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
+            
+            // Log this query
+            $this->recorded_data['external_queries'][] = [
+                "query" => $event->sql,
+                "ttr_ms" => intval($event->time * 1000),
+                "type" => "database",
+                "vendor" => $vendor,
+            ];
+            
+        } catch (\Throwable $e) {
+            $this->fail($e);
         }
-        
-        $pdo    = $event->connection->getPdo();
-        $vendor = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) .
-                  "/" .
-                  $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
-        
-        // Log this query
-        $this->recorded_data['external_queries'][] = [
-            "query" => $event->sql,
-            "ttr_ms" => intval($event->time * 1000),
-            "type" => "database",
-            "vendor" => $vendor,
-        ];
     }
     
     public function onLog($level, $message, $context)
     {
-        if ($this->isRecordingDisabled()) {
-            return;
+        try {
+            if ($this->isRecordingDisabled()) {
+                return;
+            }
+            
+            $this->recorded_data['log_entries'][] = $message .
+                                                    " context: " .
+                                                    serialize($context);
+        } catch (\Throwable $e) {
+            $this->fail($e);
         }
-        
-        $this->recorded_data['log_entries'][] = $message .
-                                                " context: " .
-                                                serialize($context);
     }
     
     
@@ -140,5 +160,18 @@ class EventListener
             app()->environment(),
             $this->config_repo->get('http_analyzer.filtering.ignore_environment', [])
         );
+    }
+    
+    /**
+     * Silently fail with log message
+     *
+     *
+     * @param \Throwable $e
+     *
+     * @return void
+     */
+    protected function fail(\Throwable $e)
+    {
+        $this->log_writer->error("Http analyzer failed", ['reason' => $e->getMessage()]);
     }
 }
