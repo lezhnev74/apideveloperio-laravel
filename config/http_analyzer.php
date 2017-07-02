@@ -6,4 +6,6 @@ return [
     // API key to sign requests to the API
     'api_key' => 'your key goes here',
     
+    // App environment in which recording is off
+    'ignore_environment' => ['testing'],
 ];

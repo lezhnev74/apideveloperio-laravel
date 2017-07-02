@@ -40,6 +40,9 @@ class EventListener
     
     public function onRequestHandled(Request $request, Response $response)
     {
+        if ($this->isRecordingDisabled()) {
+            return;
+        }
         
         // If possible - calculate time duration
         $time_to_response = defined('LARAVEL_START') ?
@@ -65,6 +68,9 @@ class EventListener
     
     public function onDatabaseQueryExecuted(QueryExecuted $event)
     {
+        if ($this->isRecordingDisabled()) {
+            return;
+        }
         
         $pdo    = $event->connection->getPdo();
         $vendor = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) .
@@ -82,6 +88,10 @@ class EventListener
     
     public function onLog($level, $message, $context)
     {
+        if ($this->isRecordingDisabled()) {
+            return;
+        }
+        
         $this->recorded_data['log_entries'][] = $message .
                                                 " context: " .
                                                 serialize($context);
@@ -100,7 +110,6 @@ class EventListener
      */
     protected function saveRecordedRequest(LoggedRequest $request, $tmp_path_folder)
     {
-        
         //
         // Now persist data till the next data dump to the API backend
         //
@@ -117,5 +126,19 @@ class EventListener
         // Dump it
         //
         file_put_contents($file_path, $request->toJson() . ",", FILE_APPEND | LOCK_EX);
+    }
+    
+    /**
+     * Detect if current environment is allowed to be recorded
+     *
+     *
+     * @return bool
+     */
+    protected function isRecordingDisabled()
+    {
+        return in_array(
+            app()->environment(),
+            $this->config_repo->get('http_analyzer.ignore_environment', [])
+        );
     }
 }

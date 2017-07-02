@@ -17,6 +17,9 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        /** @var Repository $config */
+        $config = app()[Repository::class];
+        
         $this->publishes([
             __DIR__ . '/../../config/http_analyzer.php' => config_path('http_analyzer.php'),
         ]);
@@ -24,10 +27,12 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         //
         // Hook on events
         //
+        
         $event = app(Dispatcher::class);
         $event->listen('kernel.handled', EventListener::class . '@onRequestHandled');
         $event->listen(QueryExecuted::class, EventListener::class . '@onDatabaseQueryExecuted');
         $event->listen('illuminate.log', EventListener::class . '@onLog');
+        
     }
     
     /**
