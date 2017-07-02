@@ -79,11 +79,11 @@ class EventListener
         ];
     }
     
-    public function onLog(array $event)
+    public function onLog($level, $message, $context)
     {
-        $this->recorded_data['log_entries'][] = $event['message'] .
+        $this->recorded_data['log_entries'][] = $message .
                                                 " context: " .
-                                                serialize($event['context']);
+                                                serialize($context);
     }
     
     

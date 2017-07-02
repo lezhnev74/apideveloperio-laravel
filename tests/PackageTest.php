@@ -15,6 +15,7 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PhpParser\Node\Arg;
 use Prophecy\Argument;
 use Prophecy\Prediction\PredictionInterface;
 
@@ -49,7 +50,7 @@ final class PackageTest extends LaravelApp
         );
         $stub->onDatabaseQueryExecuted($event)->shouldBeCalled();
         
-        $app[Dispatcher::class]->fire('', $event);
+        $app[Dispatcher::class]->fire($event);
     }
     
     function test_it_subscribed_on_new_message_in_log_event()
@@ -60,11 +61,11 @@ final class PackageTest extends LaravelApp
         $app[EventListener::class] = $stub->reveal();
         
         
-        $stub->onLog(Argument::that(function (array $m) {
-            return $m['level'] == 'alert' &&
-                   $m['message'] == 'message' &&
-                   $m['context'] == ['a' => 2];
-        }))->shouldBeCalled();
+        $stub->onLog(
+            Argument::is('alert'),
+            Argument::is('message'),
+            Argument::is(['a' => 2])
+        )->shouldBeCalled();
         
         $app['log']->alert("message", ['a' => 2]);
     }
