@@ -11,7 +11,8 @@ use HttpAnalyzer\Backend\LoggedRequest;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * This class will record events and keep data in memory until request is complete and then

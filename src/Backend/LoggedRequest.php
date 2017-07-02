@@ -8,7 +8,7 @@ namespace HttpAnalyzer\Backend;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * This class generates data, which conform with our backend API
