@@ -23,7 +23,7 @@ abstract class LaravelApp extends TestCase
         
         // Drop config value to allow testing
         $config = $app[Repository::class];
-        $config->set('http_analyzer.ignore_environment',[]);
+        $config->set('http_analyzer.filtering.ignore_environment', []);
         
         return $app;
     }

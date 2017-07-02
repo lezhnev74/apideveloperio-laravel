@@ -37,10 +37,7 @@ final class LoggedRequestTest extends TestCase
             100,
             null,
             null,
-            LoggedRequest::LOG_MODE_SKIP_REQUEST_HEADERS |
-            LoggedRequest::LOG_MODE_SKIP_REQUEST_BODY |
-            LoggedRequest::LOG_MODE_SKIP_RESPONSE_BODY |
-            LoggedRequest::LOG_MODE_SKIP_RESPONSE_HEADERS
+            ['strip_data' => ["request_headers", "request_body", "response_headers", "response_body"]]
         );
         $data           = $logged_request->toArray();
         

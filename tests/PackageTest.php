@@ -8,16 +8,12 @@ use HttpAnalyzer\Laravel\EventListener;
 use HttpAnalyzer\Laravel\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
-use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connection;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PhpParser\Node\Arg;
 use Prophecy\Argument;
-use Prophecy\Prediction\PredictionInterface;
 
 final class PackageTest extends LaravelApp
 {

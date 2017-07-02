@@ -16,17 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class LoggedRequest
 {
-    const LOG_MODE_ALL                   = 0;
-    const LOG_MODE_SKIP_REQUEST_HEADERS  = 1;
-    const LOG_MODE_SKIP_REQUEST_BODY     = 2;
-    const LOG_MODE_SKIP_RESPONSE_HEADERS = 4;
-    const LOG_MODE_SKIP_RESPONSE_BODY    = 8;
-    
     
     /** @var  array */
     private $data = [];
-    /** @var  int */
-    private $mode;
+    /** @var array */
+    private $filtering_config = [];
     
     
     public function __construct(
@@ -35,9 +29,9 @@ final class LoggedRequest
         $time_to_response_ms,
         $log_text = null,
         $external_queries = null,
-        $mode = self::LOG_MODE_ALL
+        $filtering_config = []
     ) {
-        $this->mode = $mode;
+        $this->filtering_config = $filtering_config;
         
         $this->fillRequestData($request);
         $this->fillResponseData($response);
@@ -45,15 +39,19 @@ final class LoggedRequest
         
         // Append other data
         $this->data['ttr_ms'] = $time_to_response_ms;
-        if ($log_text) {
+        if ($log_text && $this->dataShouldBeRecorded('log')) {
             $this->data['log'] = $log_text;
         };
-        if (is_array($external_queries) && count($external_queries)) {
+        if (
+            is_array($external_queries) &&
+            count($external_queries) &&
+            $this->dataShouldBeRecorded('external_queries')
+        ) {
             $this->data['external_queries'] = $external_queries;
         }
     }
     
-    private function fillRequestData(Request $request)
+    protected function fillRequestData(Request $request)
     {
         $this->data['full_url']    = $request->fullUrl();
         $this->data['http_method'] = strtolower($request->method());
@@ -62,7 +60,7 @@ final class LoggedRequest
         $this->data['user_agent']  = $request->headers->get('User-Agent', $request->server->get('HTTP_USER_AGENT'));
         
         
-        if (!($this->mode & self::LOG_MODE_SKIP_REQUEST_HEADERS)) {
+        if ($this->dataShouldBeRecorded('request_headers')) {
             $this->data['http_request_headers'] = [];
             foreach ($request->headers->keys() as $name) {
                 $this->data['http_request_headers'][] = [
@@ -72,7 +70,7 @@ final class LoggedRequest
             }
         }
         
-        if (!($this->mode & self::LOG_MODE_SKIP_REQUEST_BODY)) {
+        if ($this->dataShouldBeRecorded('request_body')) {
             // TODO stream body type?
             $this->data['http_request_body'] = substr((string)$request->getContent(), 0, 65535);
         }
@@ -91,15 +89,15 @@ final class LoggedRequest
         }
     }
     
-    private function fillResponseData(Response $response)
+    protected function fillResponseData(Response $response)
     {
         $this->data['http_response_code'] = $response->getStatusCode();
         
-        if (!($this->mode & self::LOG_MODE_SKIP_RESPONSE_BODY)) {
+        if ($this->dataShouldBeRecorded('response_body')) {
             $this->data['http_response_body'] = substr((string)$response->getContent(), 0, 65535);
         }
         
-        if (!($this->mode & self::LOG_MODE_SKIP_RESPONSE_HEADERS)) {
+        if ($this->dataShouldBeRecorded('response_headers')) {
             $this->data['http_response_headers'] = [];
             foreach ($response->headers->keys() as $name) {
                 $this->data['http_response_headers'][] = [
@@ -110,7 +108,7 @@ final class LoggedRequest
         }
     }
     
-    private function fillServerData(Request $request)
+    protected function fillServerData(Request $request)
     {
         $this->data['server'] = [
             "hostname" => gethostname(),
@@ -118,12 +116,27 @@ final class LoggedRequest
         ];
     }
     
+    /**
+     * Check that given data should go to recorded request log
+     *
+     *
+     * @param $data_name
+     *
+     * @return bool
+     */
+    protected function dataShouldBeRecorded($data_name)
+    {
+        $strip_data = array_get($this->filtering_config, 'strip_data', []);
+        
+        return !in_array($data_name, $strip_data);
+    }
+    
     public function toArray()
     {
         return $this->data;
     }
     
-    function toJson()
+    public function toJson()
     {
         return json_encode($this->data);
     }

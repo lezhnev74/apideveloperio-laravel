@@ -59,7 +59,7 @@ class EventListener
             $time_to_response,
             implode("\n", $this->recorded_data['log_entries']),
             $this->recorded_data['external_queries'],
-            LoggedRequest::LOG_MODE_ALL
+            $this->config_repo->get('http_analyzer.filtering')
         );
         
         $tmp_storage_path = $this->config_repo->get('http_analyzer.tmp_storage_path');
@@ -138,7 +138,7 @@ class EventListener
     {
         return in_array(
             app()->environment(),
-            $this->config_repo->get('http_analyzer.ignore_environment', [])
+            $this->config_repo->get('http_analyzer.filtering.ignore_environment', [])
         );
     }
 }
