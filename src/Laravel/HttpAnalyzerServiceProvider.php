@@ -4,6 +4,7 @@ namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\ServiceProvider;
 
@@ -44,6 +45,15 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/http_analyzer.php', 'http_analyzer'
         );
+        
+        
+        // Make sure event listener has just single instance
+        $this->app->singleton(EventListener::class, function ($app) {
+            return new EventListener(
+                $app[Repository::class],
+                $app[Log::class]
+            );
+        });
         
         //
         // Prepare Guzzle Http Client to communicate with API backend

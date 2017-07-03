@@ -1,8 +1,6 @@
 [![Packagist](https://img.shields.io/packagist/dt/lezhnev74/http-analyzer-laravel-adapter.svg)]()
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lezhnev74/http-analyzer-laravel-adapter/master/LICENSE)
-[![Build Status](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter.svg?branch=master)](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lezhnev74/http-analyzer-laravel-adapter/?branch=master)
+[![Build Status](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter.svg?branch=laravel-53)](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter)
 
 # Laravel package to dump HTTP requests to your Dashboard
 Laravel API adapter to track each http request app handled.
@@ -24,6 +22,15 @@ Laravel API adapter to track each http request app handled.
 composer require "lezhnev74/http-analyzer-laravel-adapter=~3.0"
 ```
 
+#### Add service provider to your `config/app.php`
+ 
+```php
+    'providers' => [
+        ...
+        '\HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider'
+    ],
+```
+
 #### Run this this command to publish configuration file to your `/config` folder.
 
 ```
@@ -31,14 +38,14 @@ php artisan vendor:publish --provider="HttpAnalyzer\Laravel\HttpAnalyzerServiceP
 ```
 
 #### Set-up cron command 
-To dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add `DumpRecordedRequests::class` to commands list.
+To dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add class to commands list.
 
 ```php
 #app/Console/Kernel.php
 ....
 protected $commands = [
     ...
-    'HttpAnalyzer\Laravel\DumpRecordedRequests\DumpRecordedRequests',
+    '\HttpAnalyzer\Laravel\DumpRecordedRequests',
 ];
 
 ...
@@ -50,6 +57,8 @@ protected function schedule(Schedule $schedule)
     $schedule->command('http_analyzer:dump')->everyMinute();
 }
 ```
+
+#### That's it!
 
 ## Configuration
 After publishing, config file will be located at `config/http_analyzer.php` and speaks for himself.
