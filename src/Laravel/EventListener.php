@@ -108,9 +108,16 @@ class EventListener
                 return;
             }
             
-            $this->recorded_data['log_entries'][] = $message .
-                                                    " context: " .
-                                                    serialize($context);
+            $logged_message = $message . " context: ";
+            
+            // if it can be jsonified - do it otherway just serialize
+            if ($json = json_encode($context, JSON_UNESCAPED_UNICODE) !== false) {
+                $logged_message .= $json;
+            } else {
+                $logged_message .= serialize($context);
+            }
+            
+            $this->recorded_data['log_entries'][] = $logged_message;
         } catch (\Throwable $e) {
             $this->fail($e);
         }
