@@ -47,7 +47,7 @@ class EventListener
     public function onRequestHandled(Request $request, Response $response)
     {
         try {
-            if ($this->isRecordingDisabled()) {
+            if ($this->isRecordingDisabled() || $this->shouldSkipRequest($request)) {
                 return;
             }
             
@@ -162,6 +162,23 @@ class EventListener
     }
     
     /**
+     * Check if current request matches the filtering regexp
+     *
+     *
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function shouldSkipRequest(Request $request)
+    {
+        $regexp_patterns = $this->config_repo->get('http_analyzer.filtering.skip_url_matching_regexp', []);
+        
+        return (bool)count(array_filter($regexp_patterns, function ($pattern) use ($request) {
+            return preg_match("#$pattern#", $request->getPathInfo());
+        }));
+    }
+    
+    /**
      * Silently fail with log message
      *
      *
@@ -173,4 +190,6 @@ class EventListener
     {
         $this->log_writer->error("Http analyzer failed", ['reason' => $e->getMessage()]);
     }
+    
+    
 }

@@ -123,4 +123,22 @@ final class PackageTest extends LaravelApp
         // clean up
         rmdir($tmp_storage_path);
     }
+    
+    function test_it_skips_regex_urls()
+    {
+        $app = $this->createApplication();
+        
+        /** @var Repository $config */
+        $config           = app()[Repository::class];
+        $tmp_storage_path = __DIR__ . "/tmp/" . time();
+        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('http_analyzer.filtering.skip_url_matching_regexp', ['^/auth']);
+        
+        $request  = Request::create('/auth/signup');
+        $response = new Response();
+        $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        
+        // Make sure file is there
+        $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");
+    }
 }

@@ -21,7 +21,7 @@ Laravel API adapter to track each http request app handled.
 #### Install the package
 
 ```
-composer require "lezhnev74/http-analyzer-laravel-adapter=~1.0"
+composer require "lezhnev74/http-analyzer-laravel-adapter=~3.0"
 ```
 
 #### Run this this command to publish configuration file to your `/config` folder.

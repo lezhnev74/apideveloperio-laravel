@@ -16,5 +16,9 @@ return [
         // if you still want to see headers, but some of values should be omitted, put hte name of the header here
         // it is case insensitive, for example, good idea is to strip out "Authorization" header's value
         'strip_header_values' => ['authorization'],
+        // skip any request which match this regular expressions
+        // matched against the path part of the URL, like "/api/auth/signup"
+        // for example '^/api/auth'
+        'skip_url_matching_regexp' => [],
     ],
 ];

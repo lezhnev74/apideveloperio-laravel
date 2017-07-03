@@ -216,4 +216,5 @@ final class LoggedRequestTest extends TestCase
                 $data['http_response_headers']) !== false
         );
     }
+    
 }
