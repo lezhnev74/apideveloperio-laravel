@@ -12,6 +12,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use JMS\Serializer\SerializerBuilder;
 use Prophecy\Argument;
 
 final class PackageTest extends LaravelApp
@@ -64,6 +65,7 @@ final class PackageTest extends LaravelApp
         
         $app['log']->alert("message", ['a' => 2]);
     }
+    
     
     function test_it_dumps_data_to_file()
     {
