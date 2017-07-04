@@ -7,6 +7,7 @@ namespace HttpAnalyzerTest;
 
 use HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider;
 use Illuminate\Config\Repository;
+use Illuminate\Contracts\Logging\Log;
 use Orchestra\Testbench\TestCase;
 
 abstract class LaravelApp extends TestCase
@@ -27,5 +28,12 @@ abstract class LaravelApp extends TestCase
         return $app;
     }
     
+    protected function getTmpPath($suffix = '')
+    {
+        $path = __DIR__ . "/tmp/" . time() . "_" . $suffix;
+        mkdir($path);
+        
+        return $path;
+    }
     
 }

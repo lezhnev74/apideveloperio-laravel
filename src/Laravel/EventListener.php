@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 class EventListener
 {
     
-    
     /** @var array */
     private $recorded_data = [
         'external_queries' => [],
@@ -59,7 +58,6 @@ class EventListener
             //
             // Prepare packet with all recorded data
             //
-            
             $logged_request = new LoggedRequest(
                 $request,
                 $response,
@@ -146,7 +144,12 @@ class EventListener
         //
         // make a file to dump every request to
         //
-        $file_path = $tmp_path_folder . "/recorded_requests";
+        $file_path     = $tmp_path_folder . "/recorded_requests";
+        $max_file_size = (int) $this->config_repo->get('http_analyzer.dump_file_max_size', 10 * 1024 * 1024);
+        if (file_exists($file_path) && filesize($file_path) > $max_file_size) {
+            // rename it and write to a fresh one
+            rename($file_path, $file_path . "_batch_" . date("d-m-Y_H_i_s") . "_" . str_random(8));
+        }
         
         //
         // Dump it

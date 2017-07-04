@@ -40,10 +40,8 @@ final class DumpRecordedRequests extends Command
         }
         
         $dump_files_full_paths = $this->findDumpFiles($tmp_storage_path);
-        
-        if (count($dump_files_full_paths) && $this->sendDumps($dump_files_full_paths)) {
-            array_map('unlink', $dump_files_full_paths);
-        }
+        // send if there are any
+        count($dump_files_full_paths) && $this->sendDumps($dump_files_full_paths);
         
     }
     
@@ -54,7 +52,7 @@ final class DumpRecordedRequests extends Command
      */
     protected function renameFile($file)
     {
-        $new_name = $file . "_prepared_for_uploading_at_" . date('d-m-Y_H_i_s');
+        $new_name = $file . "_batch_" . date('d-m-Y_H_i_s') . "_" . str_random(8);
         rename($file, $new_name);
         
         return $new_name;
@@ -63,7 +61,7 @@ final class DumpRecordedRequests extends Command
     /**
      * Will scan directory for any files prepared to be dumped to API backend
      * There could be more than just one file, because some dump requests can fail
-     * and file will stay untill dumped again next time
+     * and file will stay until dumped again next time
      *
      * @param $dump_directory
      *
@@ -74,7 +72,7 @@ final class DumpRecordedRequests extends Command
         return array_map(function ($filename) use ($dump_directory) {
             return $dump_directory . "/" . $filename;
         }, array_filter(scandir($dump_directory), function ($filename) {
-            return strpos($filename, "recorded_requests_prepared_for_uploading_at") === 0;
+            return strpos($filename, "batch") !== false;
         }));
     }
     
@@ -84,35 +82,40 @@ final class DumpRecordedRequests extends Command
      *
      * @param array $dump_file
      *
-     * @return bool
+     * @return void
      */
     protected function sendDumps($dump_files)
     {
-        // Files contain valid JSON entries, concatenated with commas,
-        // so I just wrap them into an array
-        $concatenated_jsons = implode("", array_map('file_get_contents', $dump_files));
-        $concatenated_jsons = trim($concatenated_jsons, ",");// remove trailing commas
-        $json_data          = '{"requests":[' . $concatenated_jsons . ']}';
-        
-        $response = $this->guzzle_http_client->request(
-            'POST',
-            '/api/report/log',
-            [
-                'headers' => [
-                    'content-type' => 'application/json',
-                ],
-                'body' => $json_data,
-            ]
-        );
-        
-        if ($response->getStatusCode() != 200) {
-            $this->log->alert("Http Analyzer's backend server could not handle the request", [
-                'response_code' => $response->getStatusCode(),
-                'response_content' => $response->getBody()->getContents(),
-            ]);
+        //Each file is big enough to be sent, so send one file per request
+        foreach ($dump_files as $dump_file) {
+            // Files contain valid JSON entries, concatenated with commas,
+            // so I just wrap them into an array
+            $concatenated_jsons = file_get_contents($dump_file);
+            $concatenated_jsons = trim($concatenated_jsons, ",");// remove trailing commas
+            $json_data          = '{"requests":[' . $concatenated_jsons . ']}';
+            
+            $response = $this->guzzle_http_client->request(
+                'POST',
+                '/api/report/log',
+                [
+                    'headers' => [
+                        'content-type' => 'application/json',
+                    ],
+                    'body' => $json_data,
+                ]
+            );
+            
+            if ($response->getStatusCode() != 200) {
+                $this->log->alert("Http Analyzer's backend server could not handle the request", [
+                    'response_code' => $response->getStatusCode(),
+                    'response_content' => $response->getBody()->getContents(),
+                ]);
+            } else {
+                $this->log->debug('recorded http requests sent to backend',
+                    ['dump_file_name' => $dump_file, 'filesize' => filesize($dump_file)]);
+                unlink($dump_file);
+            }
         }
-        
-        return $response->getStatusCode() == 200;
     }
     
 }

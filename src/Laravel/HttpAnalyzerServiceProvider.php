@@ -61,7 +61,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $this->app->bind(GuzzleHttpClient::class, function ($app) {
             $config = $app[Repository::class];
             
-            $api_host = $config->get('http_analyzer.api_host', 'backend.appdeveloper.io');
+            $api_host = $config->get('http_analyzer.api_host', 'backend.apideveloper.io');
             $api_key  = $config->get('http_analyzer.api_key');
             
             return new GuzzleHttpClient([
@@ -70,5 +70,6 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
                 'query' => ['api_key' => $api_key],
             ]);
         });
+        
     }
 }

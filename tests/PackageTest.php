@@ -73,7 +73,7 @@ final class PackageTest extends LaravelApp
         
         /** @var Repository $config */
         $config           = app()[Repository::class];
-        $tmp_storage_path = __DIR__ . "/tmp/" . time();
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
         $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
         
         $request  = new Request();
@@ -81,7 +81,7 @@ final class PackageTest extends LaravelApp
         $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         
         // Make sure file is there
-        $this->assertDirectoryExists($tmp_storage_path);
+        
         $this->assertFileExists($tmp_storage_path . "/recorded_requests");
         
         // clean up
@@ -114,8 +114,7 @@ final class PackageTest extends LaravelApp
         $config = $console_app->getLaravel()[Repository::class];
         
         // Make up dump file
-        $tmp_storage_path = __DIR__ . "/tmp/" . time();
-        mkdir($tmp_storage_path);
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
         $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
         file_put_contents($tmp_storage_path . "/recorded_requests", '{"sample"=>"data"},', FILE_APPEND);
         
@@ -126,13 +125,40 @@ final class PackageTest extends LaravelApp
         rmdir($tmp_storage_path);
     }
     
+    function test_it_splits_dump_files_to_fit_the_size()
+    {
+        $app    = $this->createApplication();
+        $config = $app[Repository::class];
+        $config->set('http_analyzer.dump_file_max_size', 1); // as little as possible
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
+        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        
+        // Now imitate $n requests and make sure n files are produces
+        $n = rand(0, 100);
+        for ($i = 0; $i < $n; $i++) {
+            $app[Dispatcher::class]->fire('kernel.handled', [new Request(), new Response()]);
+        }
+        
+        $files_in_tmp_folder = array_filter(scandir($tmp_storage_path), function ($file) use ($tmp_storage_path) {
+            return is_file($tmp_storage_path . "/" . $file);
+        });
+        
+        $this->assertEquals($n, count($files_in_tmp_folder));
+        
+        // clean up
+        array_walk($files_in_tmp_folder, function ($file) use ($tmp_storage_path) {
+            unlink($tmp_storage_path . "/" . $file);
+        });
+        rmdir($tmp_storage_path);
+    }
+    
     function test_it_skips_regex_urls()
     {
         $app = $this->createApplication();
         
         /** @var Repository $config */
         $config           = app()[Repository::class];
-        $tmp_storage_path = __DIR__ . "/tmp/" . time();
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
         $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
         $config->set('http_analyzer.filtering.skip_url_matching_regexp', ['^/auth']);
         
