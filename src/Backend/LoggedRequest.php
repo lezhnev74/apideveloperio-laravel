@@ -79,14 +79,20 @@ final class LoggedRequest
         
         if (count($request->allFiles())) {
             $this->data['http_request_files'] = [];
-            /** @var UploadedFile $file */
-            foreach ($request->allFiles() as $key => $file) {
-                $this->data['http_request_files'][] = [
-                    'filename' => $file->getClientOriginalName(),
-                    'size' => $file->getSize(),
-                    'mime' => $file->getMimeType(),
-                    'fieldname' => $key,
-                ];
+            foreach ($request->allFiles() as $key => $files) {
+                // One can upload multiple files under the same name avatars[]
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                /** @var UploadedFile $file */
+                foreach ($files as $file) {
+                    $this->data['http_request_files'][] = [
+                        'filename' => $file->getClientOriginalName(),
+                        'size' => $file->getSize(),
+                        'mime' => $file->getMimeType(),
+                        'fieldname' => $key,
+                    ];
+                }
             }
         }
     }
