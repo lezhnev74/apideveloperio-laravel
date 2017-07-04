@@ -91,7 +91,7 @@ class EventListener
             // Log this query
             $this->recorded_data['external_queries'][] = [
                 "query" => $event->sql,
-                "ttr_ms" => intval($event->time * 1000),
+                "ttr_ms" => $event->time,
                 "type" => "database",
                 "vendor" => $vendor,
             ];
