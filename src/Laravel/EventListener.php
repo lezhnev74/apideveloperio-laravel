@@ -67,8 +67,7 @@ class EventListener
                 $this->config_repo->get('http_analyzer.filtering')
             );
             
-            $tmp_storage_path = $this->config_repo->get('http_analyzer.tmp_storage_path');
-            $this->saveRecordedRequest($logged_request, $tmp_storage_path);
+            $this->saveRecordedRequest($logged_request);
         } catch (\Throwable $e) {
             $this->fail($e);
         }
@@ -127,13 +126,14 @@ class EventListener
      *
      *
      * @param LoggedRequest $request
-     * @param string        $tmp_path_folder to use for temp storing
      *
      * @throws \Exception
      * @return void
      */
-    protected function saveRecordedRequest(LoggedRequest $request, $tmp_path_folder)
+    protected function saveRecordedRequest(LoggedRequest $request)
     {
+        $tmp_path_folder = $this->config_repo->get('http_analyzer.tmp_storage_path');
+        
         //
         // Now persist data till the next data dump to the API backend
         //
@@ -142,10 +142,21 @@ class EventListener
         }
         
         //
+        // If there are too many dumped un-sent files then stop recording
+        //
+        $max_files_count = (int)$this->config_repo->get('http_analyzer.dump_files_max_count', 100);
+        $dump_files      = array_filter(scandir($tmp_path_folder), function ($file) {
+            return strpos($file, "recorded_requests") !== false;
+        });
+        if (count($dump_files) >= $max_files_count) {
+            throw new \Exception("Maximum count of dump files reached. Recording stopped.");
+        }
+        
+        //
         // make a file to dump every request to
         //
         $file_path     = $tmp_path_folder . "/recorded_requests";
-        $max_file_size = (int) $this->config_repo->get('http_analyzer.dump_file_max_size', 10 * 1024 * 1024);
+        $max_file_size = (int)$this->config_repo->get('http_analyzer.dump_file_max_size', 10 * 1024 * 1024);
         if (file_exists($file_path) && filesize($file_path) > $max_file_size) {
             // rename it and write to a fresh one
             rename($file_path, $file_path . "_batch_" . date("d-m-Y_H_i_s") . "_" . str_random(8));
@@ -198,7 +209,7 @@ class EventListener
      */
     protected function fail(\Throwable $e)
     {
-        $this->log_writer->error("Http analyzer failed", ['reason' => $e->getMessage()]);
+        $this->log_writer->alert("Http analyzer failed", ['reason' => $e->getMessage()]);
     }
     
     
