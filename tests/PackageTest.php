@@ -168,5 +168,8 @@ final class PackageTest extends LaravelApp
         
         // Make sure file is there
         $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");
+        
+        // cleanup
+        rmdir($tmp_storage_path);
     }
 }
