@@ -64,7 +64,7 @@ class EventListener
                 $request,
                 $response,
                 $time_to_response,
-                implode("\n", $this->recorded_data['log_entries']),
+                implode("\n\n", $this->recorded_data['log_entries']),
                 $this->recorded_data['external_queries'],
                 $this->config_repo->get('http_analyzer.filtering')
             );
