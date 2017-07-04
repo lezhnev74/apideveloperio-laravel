@@ -85,5 +85,15 @@ This package is designed to fail silently. If something went wrong while recordi
 Also check the tmp storage folder if there are any stale dump files.
  
 
+## Suggestions
+#### If user IPs are always 127.0.0.1
+
+That happens due to some Symfony's Request issue. Try using this package - https://github.com/fideloper/TrustedProxy. Should do the trick. 
+
+#### What is the best way to track each request?
+When someone refers to particular request/response app cycle, it is best to know it's unique ID.
+ Knowing it you can easily find it in the Dashboard.
+ Just add a middleware (like this one https://github.com/softonic/laravel-middleware-request-id) which will append a unique ID to each response your app provides.
+
 ## Support
 Just open a new Issue here and get help.
