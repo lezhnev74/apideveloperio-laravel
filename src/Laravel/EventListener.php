@@ -12,6 +12,7 @@ use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Zumba\JsonSerializer\JsonSerializer;
 
 
 /**
@@ -108,14 +109,11 @@ class EventListener
                 return;
             }
             
-            $logged_message = $message . " context: ";
+            $logged_message = $message . "\n";
             
-            // if it can be jsonified - do it otherway just serialize
-            if (($json = json_encode($context, JSON_UNESCAPED_UNICODE)) !== false) {
-                $logged_message .= $json;
-            } else {
-                $logged_message .= serialize($context);
-            }
+            // Serialize data
+            $serializer     = new JsonSerializer();
+            $logged_message .= $serializer->serialize($context);
             
             $this->recorded_data['log_entries'][] = $logged_message;
         } catch (\Throwable $e) {
