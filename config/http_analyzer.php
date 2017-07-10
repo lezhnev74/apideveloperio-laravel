@@ -20,5 +20,7 @@ return [
         // matched against the path part of the URL, like "/api/auth/signup"
         // for example '^/api/auth'
         'skip_url_matching_regexp' => [],
+        // Avoid logging this http methods
+        'skip_http_methods' => ['OPTIONS', 'HEAD'],
     ],
 ];

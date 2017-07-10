@@ -45,15 +45,15 @@ class EventListener
     
     public function onRequestHandled(Request $request, Response $response)
     {
+        // If possible - calculate time duration
+        $time_to_response = defined('LARAVEL_START') ?
+            intval((microtime(true) - constant('LARAVEL_START')) * 1000) :
+            1;
+        
         try {
             if ($this->isRecordingDisabled() || $this->shouldSkipRequest($request)) {
                 return;
             }
-            
-            // If possible - calculate time duration
-            $time_to_response = defined('LARAVEL_START') ?
-                intval((microtime(true) - constant('LARAVEL_START')) * 1000) :
-                1;
             
             //
             // Prepare packet with all recorded data
@@ -196,11 +196,22 @@ class EventListener
      */
     protected function shouldSkipRequest(Request $request)
     {
-        $regexp_patterns = $this->config_repo->get('http_analyzer.filtering.skip_url_matching_regexp', []);
+        $regexp_patterns   = $this->config_repo->get('http_analyzer.filtering.skip_url_matching_regexp', []);
+        $skip_http_methods = $this->config_repo->get('http_analyzer.filtering.skip_http_methods');
         
-        return (bool)count(array_filter($regexp_patterns, function ($pattern) use ($request) {
-            return preg_match("#$pattern#", $request->getPathInfo());
-        }));
+        $should_skip = false;
+        
+        // check against HTTP method
+        $should_skip = $should_skip ||
+                       in_array(strtoupper($request->method()), array_map('strtoupper', $skip_http_methods));
+        
+        // Check URL against regexps
+        $should_skip = $should_skip ||
+                       (bool)count(array_filter($regexp_patterns, function ($pattern) use ($request) {
+                           return preg_match("#$pattern#", $request->getPathInfo());
+                       }));
+        
+        return $should_skip;
     }
     
     /**
