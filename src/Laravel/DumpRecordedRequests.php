@@ -110,6 +110,10 @@ final class DumpRecordedRequests extends Command
                     'response_code' => $response->getStatusCode(),
                     'response_content' => $response->getBody()->getContents(),
                 ]);
+                
+                // Stop sending because it is something wrong with the API server
+                // wait till the next cycle
+                return;
             } else {
                 $this->log->debug('recorded http requests sent to backend',
                     ['dump_file_name' => $dump_file, 'filesize' => filesize($dump_file)]);

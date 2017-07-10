@@ -85,9 +85,13 @@ class EventListener
                       "/" .
                       $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
             
+            // Replace bindings with real values
+            $sql = str_replace(['%', '?'], ['%%', '%s'], $event->sql);
+            $sql = vsprintf($sql, $event->bindings);
+            
             // Log this query
             $this->recorded_data['external_queries'][] = [
-                "query" => $event->sql,
+                "query" => $sql,
                 "ttr_ms" => round($event->time), // round up to ms
                 "type" => "database",
                 "vendor" => $vendor,
