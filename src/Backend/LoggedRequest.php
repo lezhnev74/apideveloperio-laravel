@@ -42,18 +42,25 @@ final class LoggedRequest
         if ($log_text && $this->dataShouldBeRecorded('log')) {
             $this->data['log'] = substr($log_text, 0, 30000);
         };
+        $this->attachExternalQueries($external_queries);
+    }
+    
+    protected function attachExternalQueries($external_queries)
+    {
         // Make sure that queries log is not longer than 30000 bytes
-        if (
-            is_array($external_queries) &&
-            count($external_queries) &&
-            $this->dataShouldBeRecorded('external_queries')
-        ) {
-            if (strlen(json_encode($external_queries)) <= 30000) {
-                $this->data['external_queries'] = $external_queries;
+        // If so, only save up to that capacity
+        $final_json_string = "";
+        foreach ($external_queries as $query) {
+            $query_json = json_encode($query);
+            
+            if (strlen($final_json_string . "," . $query_json) <= 30000) {
+                $final_json_string .= "," . $query_json;
             } else {
-                $this->data['external_queries'] = [];
+                break;
             }
         }
+        
+        $this->data['external_queries'] = "[" . trim($final_json_string, ",") . "]";
     }
     
     protected function fillRequestData(Request $request)
