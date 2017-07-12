@@ -38,15 +38,21 @@ final class LoggedRequest
         
         // Append other data
         $this->data['ttr_ms'] = $time_to_response_ms;
+        // Make sure log is not longer than 30000 bytes
         if ($log_text && $this->dataShouldBeRecorded('log')) {
-            $this->data['log'] = $log_text;
+            $this->data['log'] = substr($log_text, 0, 30000);
         };
+        // Make sure that queries log is not longer than 30000 bytes
         if (
             is_array($external_queries) &&
             count($external_queries) &&
             $this->dataShouldBeRecorded('external_queries')
         ) {
-            $this->data['external_queries'] = $external_queries;
+            if (strlen(json_encode($external_queries)) <= 30000) {
+                $this->data['external_queries'] = $external_queries;
+            } else {
+                $this->data['external_queries'] = [];
+            }
         }
     }
     
@@ -74,7 +80,7 @@ final class LoggedRequest
         
         if ($this->dataShouldBeRecorded('request_body')) {
             // TODO stream body type?
-            $this->data['http_request_body'] = substr((string)$request->getContent(), 0, 65535);
+            $this->data['http_request_body'] = substr((string)$request->getContent(), 0, 30000);
         }
         
         if (count($request->allFiles())) {
@@ -102,7 +108,7 @@ final class LoggedRequest
         $this->data['http_response_code'] = $response->getStatusCode();
         
         if ($this->dataShouldBeRecorded('response_body')) {
-            $this->data['http_response_body'] = substr((string)$response->getContent(), 0, 65535);
+            $this->data['http_response_body'] = substr((string)$response->getContent(), 0, 30000);
         }
         
         if ($this->dataShouldBeRecorded('response_headers')) {
