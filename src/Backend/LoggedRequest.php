@@ -104,7 +104,7 @@ final class LoggedRequest
                     'name' => $name,
                     'value' => $this->stripHeaderValue($name) ?
                         "__STRIPPED_VALUE__" :
-                        substr((string)$request->headers->get($name), 0, 10250),
+                        substr((string)$request->headers->get($name), 0, 1024),
                 ];
             }
         }
@@ -149,7 +149,7 @@ final class LoggedRequest
                     'name' => $name,
                     'value' => $this->stripHeaderValue($name) ?
                         "__STRIPPED_VALUE__" :
-                        substr((string)$response->headers->get($name), 0, 10250),
+                        substr((string)$response->headers->get($name), 0, 1024),
                 ];
             }
         }

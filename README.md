@@ -1,6 +1,6 @@
-[![Packagist](https://img.shields.io/packagist/dt/lezhnev74/http-analyzer-laravel-adapter.svg)]()
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lezhnev74/http-analyzer-laravel-adapter/master/LICENSE)
-[![Build Status](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter.svg?branch=laravel-53)](https://travis-ci.org/lezhnev74/http-analyzer-laravel-adapter)
+[![Packagist](https://img.shields.io/packagist/dt/lezhnev74/apideveloperio-laravel.svg)]()
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lezhnev74/apideveloperio-laravel/master/LICENSE)
+[![Build Status](https://travis-ci.org/lezhnev74/apideveloperio-laravel.svg?branch=laravel-53)](https://travis-ci.org/lezhnev74/apideveloperio-laravel)
 
 # Laravel package to dump HTTP requests to your Dashboard
 Laravel API adapter to track each http request app handled.
@@ -16,13 +16,13 @@ Laravel API adapter to track each http request app handled.
  5.4.x    | 4.0.x
 
 ### Steps
-#### Install the package
+#### 1. Install the package
 
 ```
 composer require "lezhnev74/apideveloperio-laravel=~3.0"
 ```
 
-#### Add service provider to your `config/app.php`
+#### 2. Add service provider to your `config/app.php`
  
 ```php
     'providers' => [
@@ -31,13 +31,13 @@ composer require "lezhnev74/apideveloperio-laravel=~3.0"
     ],
 ```
 
-#### Run this this command to publish configuration file to your `/config` folder.
+#### 3. Run this this command to publish configuration file to your `/config` folder.
 
 ```
 php artisan vendor:publish --provider="HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider"
 ```
 
-#### Set-up cron command 
+#### 4. Set-up cron command 
 To dump recorded requests to the Dashboard. Open your `app/Console/Kernel.php` and add class to commands list.
 
 ```php
@@ -58,7 +58,7 @@ protected function schedule(Schedule $schedule)
 }
 ```
 
-#### That's it!
+#### 5. That's it!
 
 ## Configuration
 After publishing, config file will be located at `config/http_analyzer.php` and speaks for himself.
