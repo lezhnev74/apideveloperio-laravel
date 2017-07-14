@@ -19,7 +19,7 @@ Laravel API adapter to track each http request app handled.
 #### Install the package
 
 ```
-composer require "lezhnev74/http-analyzer-laravel-adapter=~3.0"
+composer require "lezhnev74/apideveloperio-laravel=~3.0"
 ```
 
 #### Add service provider to your `config/app.php`
