@@ -1,6 +1,6 @@
 {
-    "name": "lezhnev74/http-analyzer-laravel-adapter",
-    "description": "Laravel API adapter to track each http request app handled",
+    "name": "lezhnev74/apideveloperio-laravel",
+    "description": "Laravel pacakge to track each http request and send them to apideveloper.io",
     "type": "library",
     "license": "MIT",
     "authors": [
