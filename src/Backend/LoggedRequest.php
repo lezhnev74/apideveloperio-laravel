@@ -48,15 +48,15 @@ final class LoggedRequest
     protected function attachExternalQueries($external_queries)
     {
         
-        if(is_null($external_queries)) {
+        if (is_null($external_queries)) {
             return;
         }
-    
+        
         // Make sure that queries log is not longer than 30000 bytes
         // If so, only save up to that capacity
         $this->data['external_queries'] = [];
         
-        $final_json_string              = "";
+        $final_json_string = "";
         foreach ($external_queries as $query) {
             $query_json = json_encode($query);
             
@@ -73,7 +73,24 @@ final class LoggedRequest
     
     protected function fillRequestData(Request $request)
     {
-        $this->data['full_url']    = $request->fullUrl();
+        $url = $request->fullUrl();
+        
+        //
+        // Strip query string values
+        //
+        $strip_query_agruments = array_get($this->filtering_config, 'strip_query_string_values', []);
+        if (count($strip_query_agruments)) {
+            // parse query string
+            foreach ($strip_query_agruments as $strip_query_key) {
+                if ($request->query->has($strip_query_key)) {
+                    $request->query->set($strip_query_key, '__STRIPPED_VALUE__');
+                }
+            }
+            
+            $url = $request->fullUrlWithQuery($request->query->all());
+        }
+        
+        $this->data['full_url']    = $url;
         $this->data['http_method'] = strtolower($request->method());
         $this->data['user_ip']     = $request->ip();
         $this->data['timestamp']   = $request->server->get('REQUEST_TIME', Carbon::now()->timestamp);
@@ -89,7 +106,6 @@ final class LoggedRequest
                         "__STRIPPED_VALUE__" :
                         substr((string)$request->headers->get($name), 0, 10250),
                 ];
-                
             }
         }
         

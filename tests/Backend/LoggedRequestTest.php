@@ -5,6 +5,7 @@
 
 namespace HttpAnalyzerTest\Backend;
 
+use function GuzzleHttp\Psr7\parse_query;
 use HttpAnalyzer\Backend\LoggedRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -215,6 +216,36 @@ final class LoggedRequestTest extends TestCase
             array_search(['name' => 'cache-control', 'value' => "__STRIPPED_VALUE__"],
                 $data['http_response_headers']) !== false
         );
+    }
+    
+    function test_it_stripps_query_string_values()
+    {
+        $request = Request::create(
+            'https://example.org/shop/cart.php?num=one&api_key=secret_value#some',
+            'POST',
+            [], [], [], [
+                'REMOTE_ADDR' => '192.167.35.22',
+                'SERVER_ADDR' => '127.0.0.1',
+                'REQUEST_TIME' => 1497847022,
+                'HTTP_USER_AGENT' => 'Mozilla Firefox',
+            ]
+        );
+        
+        $logged_request = new LoggedRequest(
+            $request,
+            new Response('', 200),
+            100,
+            null,
+            null,
+            [
+                'strip_query_string_values' => ["api_key"],
+            ]
+        );
+        $data           = $logged_request->toArray();
+        $info           = parse_url($data['full_url']);
+        $query_string   = parse_query($info['query']);
+        
+        $this->assertEquals("__STRIPPED_VALUE__", $query_string['api_key']);
     }
     
 }

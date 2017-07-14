@@ -181,9 +181,9 @@ class EventListener
     protected function isRecordingDisabled()
     {
         return in_array(
-            app()->environment(),
-            $this->config_repo->get('http_analyzer.filtering.ignore_environment', [])
-        );
+                   app()->environment(),
+                   $this->config_repo->get('http_analyzer.filtering.ignore_environment', [])
+               ) || !$this->config_repo->get('http_analyzer.enabled');
     }
     
     /**

@@ -193,4 +193,25 @@ final class PackageTest extends LaravelApp
         // cleanup
         rmdir($tmp_storage_path);
     }
+    
+    function test_it_can_be_disabled()
+    {
+        $app = $this->createApplication();
+        
+        /** @var Repository $config */
+        $config           = app()[Repository::class];
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
+        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('http_analyzer.enabled', false);
+        
+        $request  = Request::create('/auth/signup');
+        $response = new Response();
+        $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        
+        // Make sure file is there
+        $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");
+        
+        // cleanup
+        rmdir($tmp_storage_path);
+    }
 }
