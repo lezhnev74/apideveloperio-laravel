@@ -1,6 +1,6 @@
 [![Packagist](https://img.shields.io/packagist/dt/lezhnev74/apideveloperio-laravel.svg)]()
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lezhnev74/apideveloperio-laravel/master/LICENSE)
-[![Build Status](https://travis-ci.org/lezhnev74/apideveloperio-laravel.svg?branch=laravel-53)](https://travis-ci.org/lezhnev74/apideveloperio-laravel)
+[![Build Status](https://travis-ci.org/lezhnev74/apideveloperio-laravel.svg?branch=laravel-54)](https://travis-ci.org/lezhnev74/apideveloperio-laravel)
 
 # Laravel package to dump HTTP requests to your Dashboard
 Laravel API adapter to track each http request app handled.
