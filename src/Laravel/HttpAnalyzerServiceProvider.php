@@ -6,6 +6,8 @@ use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\ServiceProvider;
 
 final class HttpAnalyzerServiceProvider extends ServiceProvider
@@ -29,9 +31,19 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         //
         
         $event = app(Dispatcher::class);
-        $event->listen('kernel.handled', EventListener::class . '@onRequestHandled');
+        $event->listen(RequestHandled::class, function (RequestHandled $event) {
+            $listener = app()[EventListener::class];
+            $listener->onRequestHandled($event->request, $event->response);
+        });
         $event->listen(QueryExecuted::class, EventListener::class . '@onDatabaseQueryExecuted');
-        $event->listen('illuminate.log', EventListener::class . '@onLog');
+        $event->listen(MessageLogged::class, function (MessageLogged $event) {
+            $listener = app()[EventListener::class];
+            $listener->onLog(
+                $event->level,
+                $event->message,
+                $event->context
+            );
+        });
         
     }
     
