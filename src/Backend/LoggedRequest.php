@@ -112,6 +112,13 @@ final class LoggedRequest
         if ($this->dataShouldBeRecorded('request_body')) {
             // TODO stream body type?
             $this->data['http_request_body'] = substr((string)$request->getContent(), 0, 30000);
+            // if(multipart then we have a problem)
+            // Ref: https://github.com/symfony/symfony/issues/13846
+            if (!strlen($this->data['http_request_body']) &&
+                in_array(strtolower($request->getMethod()), ['post', 'put'])
+            ) {
+                $this->data['http_request_body'] = $request->request->all();
+            }
         }
         
         if (count($request->allFiles())) {

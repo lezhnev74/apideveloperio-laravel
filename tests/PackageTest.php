@@ -89,6 +89,30 @@ final class PackageTest extends LaravelApp
         rmdir($tmp_storage_path);
     }
     
+    function test_it_dumps_multipart_post_data_to_file()
+    {
+        $app = $this->createApplication();
+        
+        /** @var Repository $config */
+        $config           = app()[Repository::class];
+        $tmp_storage_path = $this->getTmpPath(__LINE__);
+        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        
+        $data     = ['a' => 'some'];
+        $request  = Request::create('/api/signup?b=12', 'POST', $data);
+        $response = new Response();
+        $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        
+        // Make sure file is there
+        
+        $recorded_response = json_decode(trim(file_get_contents($tmp_storage_path . "/recorded_requests"), ','), true);
+        $this->assertEquals($data, $recorded_response['http_request_body']);
+        
+        // clean up
+        unlink($tmp_storage_path . "/recorded_requests");
+        rmdir($tmp_storage_path);
+    }
+    
     function test_it_sends_dump_to_api_backend()
     {
         $console_app = new Application($this->app, $this->app[Dispatcher::class], "1");
