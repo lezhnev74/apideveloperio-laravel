@@ -117,7 +117,7 @@ final class LoggedRequest
             if (!strlen($this->data['http_request_body']) &&
                 in_array(strtolower($request->getMethod()), ['post', 'put'])
             ) {
-                $this->data['http_request_body'] = $request->request->all();
+                $this->data['http_request_body'] = json_encode($request->request->all());
             }
         }
         

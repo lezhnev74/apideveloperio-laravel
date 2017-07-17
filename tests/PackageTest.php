@@ -106,7 +106,7 @@ final class PackageTest extends LaravelApp
         // Make sure file is there
         
         $recorded_response = json_decode(trim(file_get_contents($tmp_storage_path . "/recorded_requests"), ','), true);
-        $this->assertEquals($data, $recorded_response['http_request_body']);
+        $this->assertEquals($data, json_decode($recorded_response['http_request_body'], true));
         
         // clean up
         unlink($tmp_storage_path . "/recorded_requests");
