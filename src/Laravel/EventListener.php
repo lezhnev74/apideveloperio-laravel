@@ -85,6 +85,13 @@ class EventListener
                       "/" .
                       $pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
             
+            // Laravel casting returns some items as DateTime objects
+            foreach ($event->bindings as $key => $binding) {
+                if (is_a($binding, 'DateTime')) {
+                    $event->bindings[$key] = $binding->format('Y-m-d H:i:s');
+                }
+            }
+            
             // Replace bindings with real values
             $sql = str_replace(['%', '?'], ['%%', '%s'], $event->sql);
             $sql = vsprintf($sql, $event->bindings);
