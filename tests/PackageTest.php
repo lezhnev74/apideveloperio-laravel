@@ -8,6 +8,7 @@ use HttpAnalyzer\Laravel\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
@@ -237,5 +238,45 @@ final class PackageTest extends LaravelApp
         
         // cleanup
         rmdir($tmp_storage_path);
+    }
+    
+    function test_it_automatically_converts_query_bindings_to_strings()
+    {
+        $app = $this->createApplication();
+    
+        // Enable logging while testing
+        /** @var Repository $config */
+        $config = app()[Repository::class];
+        $config->set('http_analyzer.filtering.ignore_environment', []);
+        $config->set('http_analyzer.enabled', true);
+    
+        // Fake log writer
+        // Log shoudl not be called because logging is only called on problem
+        $log_prophecy = static::prophesize(Log::class);
+        $log_prophecy->alert(Argument::cetera())->shouldNotBeCalled();
+        $app[Log::class] = $log_prophecy->reveal();
+    
+        // Fake Connection
+        $pdo_prophecy = static::prophesize(\PDO::class);
+        $pdo_prophecy->getAttribute(\PDO::ATTR_DRIVER_NAME)->willReturn("A")->shouldBeCalled();
+        $pdo_prophecy->getAttribute(\PDO::ATTR_SERVER_VERSION)->willReturn("B")->shouldBeCalled();
+    
+        $connection_prophecy = static::prophesize(Connection::class);
+        $connection_prophecy->getName()->willReturn("default")->shouldBeCalled();
+        $connection_prophecy->getPdo()->willReturn($pdo_prophecy->reveal())->shouldBeCalled();
+    
+        // Emit event
+        $event = new QueryExecuted(
+            'select * from users where created_at>?',
+            [
+                new \DateTime(),
+            ],
+            microtime(true),
+            $connection_prophecy->reveal()
+        );
+        // imitate db request
+        $app[Dispatcher::class]->fire($event);
+    
+    
     }
 }
