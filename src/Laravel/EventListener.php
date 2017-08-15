@@ -79,7 +79,7 @@ class EventListener
             if ($this->isRecordingDisabled()) {
                 return;
             }
-            
+    
             $pdo    = $event->connection->getPdo();
             $vendor = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) .
                       "/" .
