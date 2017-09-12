@@ -11,7 +11,7 @@ Laravel API adapter to track each http request app handled.
  Laravel version  | Package version | Composer command
 :---------|:----------|:---------
  5.3.x    | 3.0.x | `composer require "lezhnev74/apideveloperio-laravel=~3.0"`
- 5.4.x    | 4.0.x | `composer require "lezhnev74/apideveloperio-laravel=~4.0"`
+ 5.5.x, 5.4.x    | 4.0.x | `composer require "lezhnev74/apideveloperio-laravel=~4.0"`
 
 ### Steps
 #### 1. Install the package
