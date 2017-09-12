@@ -248,4 +248,36 @@ final class LoggedRequestTest extends TestCase
         $this->assertEquals("__STRIPPED_VALUE__", $query_string['api_key']);
     }
     
+    function test_it_converts_header_names_and_values_to_strings()
+    {
+        $request = Request::create(
+            'http://example.org/shop/cart.php?num=one&price=10',
+            'POST',
+            [],
+            [],
+            [],
+            [
+                'REMOTE_ADDR' => '192.167.35.22',
+                'SERVER_ADDR' => '127.0.0.1',
+                'REQUEST_TIME' => 1497847022,
+                'HTTP_USER_AGENT' => null,
+            ]
+        );
+        $request->headers->add([1 => 2]);
+        $request->headers->add([3 => null]);
+        
+        $response = new Response('', 200);
+        
+        $logged_request = new LoggedRequest($request, $response, 100);
+        $data           = $logged_request->toArray();
+        
+        $this->assertTrue(array_search(['name' => 'user-agent', 'value' => ''],
+                $data['http_request_headers'], true) !== false);
+        $this->assertTrue(array_search(['name' => '1', 'value' => '2'],
+                $data['http_request_headers'], true) !== false);
+        $this->assertTrue(array_search(['name' => '3', 'value' => ''],
+                $data['http_request_headers'], true) !== false);
+        
+    }
+    
 }

@@ -101,7 +101,7 @@ final class LoggedRequest
             $this->data['http_request_headers'] = [];
             foreach ($request->headers->keys() as $name) {
                 $this->data['http_request_headers'][] = [
-                    'name' => $name,
+                    'name' => (string)$name,
                     'value' => $this->stripHeaderValue($name) ?
                         "__STRIPPED_VALUE__" :
                         substr((string)$request->headers->get($name), 0, 1024),
@@ -153,7 +153,7 @@ final class LoggedRequest
             $this->data['http_response_headers'] = [];
             foreach ($response->headers->keys() as $name) {
                 $this->data['http_response_headers'][] = [
-                    'name' => $name,
+                    'name' => (string) $name,
                     'value' => $this->stripHeaderValue($name) ?
                         "__STRIPPED_VALUE__" :
                         substr((string)$response->headers->get($name), 0, 1024),
