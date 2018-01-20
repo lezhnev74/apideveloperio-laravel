@@ -3,10 +3,10 @@
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
 
-namespace HttpAnalyzerTest\Backend;
+namespace Apideveloper\Laravel\Tests\Backend;
 
 use function GuzzleHttp\Psr7\parse_query;
-use HttpAnalyzer\Backend\LoggedRequest;
+use Apideveloper\Laravel\Backend\LoggedHTTPRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +31,7 @@ final class LoggedRequestTest extends TestCase
         
         $response = new Response('', 200);
         
-        $logged_request = new LoggedRequest(
+        $logged_request = new LoggedHTTPRequest(
             $request,
             $response,
             100,
@@ -92,7 +92,7 @@ final class LoggedRequestTest extends TestCase
         // Now produce logged packet with data (which can be sent to API backend)
         //
         
-        $logged_request = new LoggedRequest(
+        $logged_request = new LoggedHTTPRequest(
             $request,
             $response,
             100,
@@ -199,7 +199,7 @@ final class LoggedRequestTest extends TestCase
             ]
         );
         
-        $logged_request = new LoggedRequest(
+        $logged_request = new LoggedHTTPRequest(
             $request,
             new Response('', 200),
             100,
@@ -231,7 +231,7 @@ final class LoggedRequestTest extends TestCase
             ]
         );
         
-        $logged_request = new LoggedRequest(
+        $logged_request = new LoggedHTTPRequest(
             $request,
             new Response('', 200),
             100,
@@ -268,7 +268,7 @@ final class LoggedRequestTest extends TestCase
         
         $response = new Response('', 200);
         
-        $logged_request = new LoggedRequest($request, $response, 100);
+        $logged_request = new LoggedHTTPRequest($request, $response, 100);
         $data           = $logged_request->toArray();
         
         $this->assertTrue(array_search(['name' => 'user-agent', 'value' => ''],

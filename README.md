@@ -3,21 +3,15 @@
 [![Build Status](https://travis-ci.org/lezhnev74/apideveloperio-laravel.svg?branch=laravel-54)](https://travis-ci.org/lezhnev74/apideveloperio-laravel)
 
 # Laravel package to dump HTTP requests to your Dashboard
-Laravel API adapter to track each http request app handled.
+Laravel package to send logs to your apideveloper.io dashboard. It works with both HTTP logs as well as normal text logs.
 
 ## Installation
-
-### Version Compability
- Laravel version  | Package version | Composer command
-:---------|:----------|:---------
- 5.3.x    | 3.0.x | `composer require "lezhnev74/apideveloperio-laravel=~3.0"`
- 5.5.x, 5.4.x    | 4.0.x | `composer require "lezhnev74/apideveloperio-laravel=~4.0"`
 
 ### Steps
 #### 1. Install the package
 
 ```
-composer require "lezhnev74/apideveloperio-laravel=~3.0"
+composer require "lezhnev74/apideveloperio-laravel=~5.0"
 ```
 
 #### 2. Add service provider to your `config/app.php`

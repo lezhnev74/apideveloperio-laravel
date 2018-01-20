@@ -3,11 +3,10 @@
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
 
-namespace HttpAnalyzerTest;
+namespace Apideveloper\Laravel\Tests;
 
-use HttpAnalyzer\Laravel\HttpAnalyzerServiceProvider;
+use Apideveloper\Laravel\Laravel\HttpAnalyzerServiceProvider;
 use Illuminate\Config\Repository;
-use Illuminate\Contracts\Logging\Log;
 use Orchestra\Testbench\TestCase;
 
 abstract class LaravelApp extends TestCase

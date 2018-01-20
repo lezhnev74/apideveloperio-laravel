@@ -3,7 +3,7 @@
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
 
-namespace HttpAnalyzer\Backend;
+namespace Apideveloper\Laravel\Backend;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * This class generates data, which conform with our backend API
  */
-final class LoggedRequest
+final class LoggedHTTPRequest
 {
     
     /** @var  array */

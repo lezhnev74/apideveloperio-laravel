@@ -3,10 +3,10 @@
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
 
-namespace HttpAnalyzer\Laravel;
+namespace Apideveloper\Laravel\Laravel\HTTP;
 
 
-use HttpAnalyzer\Backend\LoggedRequest;
+use Apideveloper\Laravel\Backend\LoggedHTTPRequest;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
@@ -58,7 +58,7 @@ class EventListener
             //
             // Prepare packet with all recorded data
             //
-            $logged_request = new LoggedRequest(
+            $logged_request = new LoggedHTTPRequest(
                 $request,
                 $response,
                 $time_to_response,
@@ -136,12 +136,12 @@ class EventListener
      * saveRecordedRequest
      *
      *
-     * @param LoggedRequest $request
+     * @param LoggedHTTPRequest $request
      *
      * @throws \Exception
      * @return void
      */
-    protected function saveRecordedRequest(LoggedRequest $request)
+    protected function saveRecordedRequest(LoggedHTTPRequest $request)
     {
         $tmp_path_folder = $this->config_repo->get('http_analyzer.tmp_storage_path');
         

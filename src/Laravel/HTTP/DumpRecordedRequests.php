@@ -3,8 +3,9 @@
  * @author Dmitriy Lezhnev <lezhnev.work@gmail.com>
  */
 
-namespace HttpAnalyzer\Laravel;
+namespace Apideveloper\Laravel\Laravel\HTTP;
 
+use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Logging\Log;

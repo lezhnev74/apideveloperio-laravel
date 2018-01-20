@@ -1,10 +1,10 @@
 <?php
 
-namespace HttpAnalyzerTest;
+namespace Apideveloper\Laravel\Tests;
 
-use HttpAnalyzer\Laravel\DumpRecordedRequests;
-use HttpAnalyzer\Laravel\EventListener;
-use HttpAnalyzer\Laravel\GuzzleHttpClient;
+use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedRequests;
+use Apideveloper\Laravel\Laravel\HTTP\EventListener;
+use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -18,6 +18,7 @@ use Prophecy\Argument;
 
 final class PackageTest extends LaravelApp
 {
+
     function test_it_subscribed_on_request_handled_event()
     {
         $app = $this->createApplication();

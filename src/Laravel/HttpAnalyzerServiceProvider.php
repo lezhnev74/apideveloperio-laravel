@@ -1,7 +1,8 @@
 <?php
 
-namespace HttpAnalyzer\Laravel;
+namespace Apideveloper\Laravel\Laravel;
 
+use Apideveloper\Laravel\Laravel\HTTP\EventListener;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Logging\Log;
