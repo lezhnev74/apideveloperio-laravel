@@ -11,7 +11,7 @@ use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\ServiceProvider;
 
-final class HttpAnalyzerServiceProvider extends ServiceProvider
+final class ApideveloperioServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -24,14 +24,16 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $config = app()[Repository::class];
         
         $this->publishes([
-            __DIR__ . '/../../config/http_analyzer.php' => config_path('http_analyzer.php'),
+            __DIR__ . '/../../config/apideveloperio_logs.php' => config_path('apideveloperio_logs.php'),
         ]);
         
         //
         // Hook on events
         //
-        
+
         $event = app(Dispatcher::class);
+
+        // HTTP Log related
         $event->listen(RequestHandled::class, function (RequestHandled $event) {
             $listener = app()[EventListener::class];
             $listener->onRequestHandled($event->request, $event->response);
@@ -45,6 +47,8 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
                 $event->context
             );
         });
+
+        // TextLog related
         
     }
     
@@ -56,7 +60,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/http_analyzer.php', 'http_analyzer'
+            __DIR__ . '/../../config/apideveloperio_logs.php', 'apideveloperio_logs'
         );
         
         
@@ -74,8 +78,8 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $this->app->bind(GuzzleHttpClient::class, function ($app) {
             $config = $app[Repository::class];
             
-            $api_host = $config->get('http_analyzer.api_host', 'backend.apideveloper.io');
-            $api_key  = $config->get('http_analyzer.api_key');
+            $api_host = $config->get('apideveloperio_logs.httplog.api_host', 'backend.apideveloper.io');
+            $api_key  = $config->get('apideveloperio_logs.httplog.api_key');
             
             return new GuzzleHttpClient([
                 'base_uri' => 'https://' . $api_host,

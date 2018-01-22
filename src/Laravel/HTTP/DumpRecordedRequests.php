@@ -33,7 +33,7 @@ final class DumpRecordedRequests extends Command
     
     public function handle()
     {
-        $tmp_storage_path = $this->config_repo->get('http_analyzer.tmp_storage_path');
+        $tmp_storage_path = $this->config_repo->get('apideveloperio_logs.httplog.tmp_storage_path');
         $dump_file        = $tmp_storage_path . "/recorded_requests";
         
         if (file_exists($dump_file)) {

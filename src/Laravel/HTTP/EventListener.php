@@ -64,7 +64,7 @@ class EventListener
                 $time_to_response,
                 implode("\n\n", $this->recorded_data['log_entries']),
                 $this->recorded_data['external_queries'],
-                $this->config_repo->get('http_analyzer.filtering')
+                $this->config_repo->get('apideveloperio_logs.httplog.filtering')
             );
             
             $this->saveRecordedRequest($logged_request);
@@ -143,7 +143,7 @@ class EventListener
      */
     protected function saveRecordedRequest(LoggedHTTPRequest $request)
     {
-        $tmp_path_folder = $this->config_repo->get('http_analyzer.tmp_storage_path');
+        $tmp_path_folder = $this->config_repo->get('apideveloperio_logs.httplog.tmp_storage_path');
         
         //
         // Now persist data till the next data dump to the API backend
@@ -155,7 +155,7 @@ class EventListener
         //
         // If there are too many dumped un-sent files then stop recording
         //
-        $max_files_count = (int)$this->config_repo->get('http_analyzer.dump_files_max_count', 100);
+        $max_files_count = (int)$this->config_repo->get('apideveloperio_logs.httplog.dump_files_max_count', 100);
         $dump_files      = array_filter(scandir($tmp_path_folder), function ($file) {
             return strpos($file, "recorded_requests") !== false;
         });
@@ -167,7 +167,7 @@ class EventListener
         // make a file to dump every request to
         //
         $file_path     = $tmp_path_folder . "/recorded_requests";
-        $max_file_size = (int)$this->config_repo->get('http_analyzer.dump_file_max_size', 10 * 1024 * 1024);
+        $max_file_size = (int)$this->config_repo->get('apideveloperio_logs.httplog.dump_file_max_size', 10 * 1024 * 1024);
         if (file_exists($file_path) && filesize($file_path) > $max_file_size) {
             // rename it and write to a fresh one
             rename($file_path, $file_path . "_batch_" . date("d-m-Y_H_i_s") . "_" . str_random(8));
@@ -189,8 +189,8 @@ class EventListener
     {
         return in_array(
                    app()->environment(),
-                   $this->config_repo->get('http_analyzer.filtering.ignore_environment', [])
-               ) || !$this->config_repo->get('http_analyzer.enabled');
+                   $this->config_repo->get('apideveloperio_logs.httplog.filtering.ignore_environment', [])
+               ) || !$this->config_repo->get('apideveloperio_logs.httplog.enabled');
     }
     
     /**
@@ -203,8 +203,8 @@ class EventListener
      */
     protected function shouldSkipRequest(Request $request)
     {
-        $regexp_patterns   = $this->config_repo->get('http_analyzer.filtering.skip_url_matching_regexp', []);
-        $skip_http_methods = $this->config_repo->get('http_analyzer.filtering.skip_http_methods');
+        $regexp_patterns   = $this->config_repo->get('apideveloperio_logs.httplog.filtering.skip_url_matching_regexp', []);
+        $skip_http_methods = $this->config_repo->get('apideveloperio_logs.httplog.filtering.skip_http_methods');
         
         $should_skip = false;
         

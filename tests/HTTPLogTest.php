@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Prophecy\Argument;
 
-final class PackageTest extends LaravelApp
+final class HTTPLogTest extends LaravelApp
 {
 
     function test_it_subscribed_on_request_handled_event()
@@ -76,7 +76,7 @@ final class PackageTest extends LaravelApp
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
         
         $request  = new Request();
         $response = new Response();
@@ -98,7 +98,7 @@ final class PackageTest extends LaravelApp
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
         
         $data     = ['a' => 'some'];
         $request  = Request::create('/api/signup?b=12', 'POST', $data);
@@ -141,7 +141,7 @@ final class PackageTest extends LaravelApp
         
         // Make up dump file
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
         file_put_contents($tmp_storage_path . "/recorded_requests", '{"sample"=>"data"},', FILE_APPEND);
         
         // Initiate a command
@@ -155,9 +155,9 @@ final class PackageTest extends LaravelApp
     {
         $app    = $this->createApplication();
         $config = $app[Repository::class];
-        $config->set('http_analyzer.dump_file_max_size', 1); // as little as possible
+        $config->set('apideveloperio_logs.httplog.dump_file_max_size', 1); // as little as possible
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
         
         // Now imitate $n requests and make sure n files are produces
         $n = rand(0, 100);
@@ -185,8 +185,8 @@ final class PackageTest extends LaravelApp
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
-        $config->set('http_analyzer.filtering.skip_url_matching_regexp', ['^/auth']);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.filtering.skip_url_matching_regexp', ['^/auth']);
         
         $request  = Request::create('/auth/signup');
         $response = new Response();
@@ -206,8 +206,8 @@ final class PackageTest extends LaravelApp
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
-        $config->set('http_analyzer.filtering.skip_http_methods', ['OPtiONS']);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.filtering.skip_http_methods', ['OPtiONS']);
         
         $request  = Request::create('/auth/signup', 'OPTIONs');
         $response = new Response();
@@ -227,8 +227,8 @@ final class PackageTest extends LaravelApp
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
-        $config->set('http_analyzer.tmp_storage_path', $tmp_storage_path);
-        $config->set('http_analyzer.enabled', false);
+        $config->set('apideveloperio_logs.httplog.tmp_storage_path', $tmp_storage_path);
+        $config->set('apideveloperio_logs.httplog.enabled', false);
         
         $request  = Request::create('/auth/signup');
         $response = new Response();
@@ -248,8 +248,8 @@ final class PackageTest extends LaravelApp
         // Enable logging while testing
         /** @var Repository $config */
         $config = app()[Repository::class];
-        $config->set('http_analyzer.filtering.ignore_environment', []);
-        $config->set('http_analyzer.enabled', true);
+        $config->set('apideveloperio_logs.filtering.ignore_environment', []);
+        $config->set('apideveloperio_logs.httplog.httplog.enabled', true);
         
         // Fake log writer
         // Log shoudl not be called because logging is only called on problem
