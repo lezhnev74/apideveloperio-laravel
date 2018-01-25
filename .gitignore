@@ -29,3 +29,4 @@ Homestead.json
 .rocketeer/
 
 .idea/
+tests/tmp/
