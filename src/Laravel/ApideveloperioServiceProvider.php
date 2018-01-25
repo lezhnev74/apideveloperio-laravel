@@ -3,7 +3,7 @@
 namespace Apideveloper\Laravel\Laravel;
 
 use Apideveloper\Laravel\Backend\File\FileDumper;
-use Apideveloper\Laravel\Backend\File\FileOptions;
+use Apideveloper\Laravel\Backend\File\PersistingStrategy;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener as HTTPEventListener;
 use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
 use Apideveloper\Laravel\Laravel\Text\EventListener as TextEventListener;
@@ -97,10 +97,18 @@ final class ApideveloperioServiceProvider extends ServiceProvider
 
         // Make sure event listener has just single instance
         $this->app->singleton(HTTPEventListener::class, function ($app) use ($app_execution_id) {
+            $config = $app[Repository::class];
+
             return new HTTPEventListener(
 //                $app_execution_id, // TODO link text logs to http requests
                 $app[Repository::class],
-                $app[Log::class]
+                $app[Log::class],
+                new FileDumper(new PersistingStrategy(
+                    $config->get('apideveloperio_logs.httplog.tmp_storage_path', 'unknown_path'),
+                    $config->get('apideveloperio_logs.httplog.dump_files_max_count', 100),
+                    $config->get('apideveloperio_logs.httplog.dump_file_max_size', 10 * 1024 * 1024),
+                    'recorded_requests'
+                ))
             );
         });
 
@@ -128,7 +136,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
 
             return new TextEventListener(
                 $app_execution_id,
-                new FileDumper(new FileOptions(
+                new FileDumper(new PersistingStrategy(
                     $config->get('apideveloperio_logs.textlog.tmp_storage_path', 'unknown_path'),
                     $config->get('apideveloperio_logs.textlog.dump_files_max_count', 100),
                     $config->get('apideveloperio_logs.textlog.dump_file_max_size', 10 * 1024 * 1024),

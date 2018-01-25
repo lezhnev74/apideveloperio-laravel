@@ -30,7 +30,7 @@ class TextLogTest extends LaravelApp
         $listener->__destruct(); // imitate end of life
         $this->assertFileExists($tmp_storage_path . "/buffered_text_logs");
         $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
-        $json_decoded  = json_decode($file_contents, true);
+        $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
 
         $this->assertEquals([
             [
@@ -47,7 +47,7 @@ class TextLogTest extends LaravelApp
                     "message_index" => 1,
                 ],
             ],
-        ], $json_decoded['messages']);
+        ], $json_decoded[0]['messages']);
 
     }
 
@@ -64,10 +64,13 @@ class TextLogTest extends LaravelApp
         // Check data
         $listener->__destruct(); // imitate end of life
         $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
-        $json_decoded  = json_decode($file_contents, true);
+        $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
 
-        $this->assertCount(1, $json_decoded['messages']);
-        $this->assertEquals(ExceptionFormatter::fromException($e)->toArray(), $json_decoded['messages'][0]['exception']);
+        $this->assertCount(1, $json_decoded);
+        $this->assertCount(1, $json_decoded[0]['messages']);
+        $this->assertCount(2, $json_decoded[0]['messages'][0]['exception']);
+        $this->assertEquals(ExceptionFormatter::fromException($e)->toArray(),
+            $json_decoded[0]['messages'][0]['exception']);
 
     }
 

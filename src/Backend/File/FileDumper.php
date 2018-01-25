@@ -9,14 +9,14 @@ namespace Apideveloper\Laravel\Backend\File;
 
 class FileDumper implements LogsDumper
 {
-    /** @var FileOptions */
+    /** @var PersistingStrategy */
     private $options;
 
     /**
      * FileDumper constructor.
-     * @param FileOptions $options
+     * @param PersistingStrategy $options
      */
-    public function __construct(FileOptions $options)
+    public function __construct(PersistingStrategy $options)
     {
         $this->options = $options;
     }
@@ -27,7 +27,7 @@ class FileDumper implements LogsDumper
         $file_path = $this->getFileForDumping();
         file_put_contents(
             $file_path,
-            json_encode($data_array), // comma is for latter wrapping to json array "[...]"
+            json_encode($data_array) . ",", // comma is for latter wrapping to json array "[...]"
             FILE_APPEND | LOCK_EX
         );
     }

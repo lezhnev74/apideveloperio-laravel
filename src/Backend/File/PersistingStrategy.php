@@ -7,7 +7,7 @@
 namespace Apideveloper\Laravel\Backend\File;
 
 
-class FileOptions
+class PersistingStrategy
 {
     /** @var string */
     private $folder;
@@ -33,8 +33,8 @@ class FileOptions
         if ($max_files < 1) {
             throw new \InvalidArgumentException("Max files count has wrong value: $max_files");
         }
-        if ($max_file_size_bytes < 1024 * 1024) {
-            throw new \InvalidArgumentException("Max file size must not be less than 1Mb, but set as: $max_file_size_bytes");
+        if ($max_file_size_bytes < 1) {
+            throw new \InvalidArgumentException("Max file size must positive, but set as: $max_file_size_bytes");
         }
 
         $this->folder          = $folder;
@@ -74,7 +74,6 @@ class FileOptions
     {
         return $this->filename_prefix;
     }
-
 
 
 }

@@ -5,14 +5,13 @@
 
 namespace Apideveloper\Laravel\Laravel\HTTP;
 
-use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Logging\Log;
 
 final class DumpRecordedRequests extends Command
 {
-    protected $signature   = 'http_analyzer:dump';
+    protected $signature = 'http_analyzer:dump';
     protected $description = 'Send recorded http requests to API backend and them remove them from local filesystem';
     /** @var  Repository */
     private $config_repo;
@@ -20,32 +19,31 @@ final class DumpRecordedRequests extends Command
     private $log;
     /** @var  GuzzleHttpClient */
     private $guzzle_http_client;
-    
-    
+
     public function __construct(Repository $config_repo, Log $log, GuzzleHttpClient $client)
     {
         $this->config_repo        = $config_repo;
         $this->log                = $log;
         $this->guzzle_http_client = $client;
-        
+
         parent::__construct();
     }
-    
+
     public function handle()
     {
         $tmp_storage_path = $this->config_repo->get('apideveloperio_logs.httplog.tmp_storage_path');
         $dump_file        = $tmp_storage_path . "/recorded_requests";
-        
+
         if (file_exists($dump_file)) {
             $this->renameFile($dump_file);
         }
-        
+
         $dump_files_full_paths = $this->findDumpFiles($tmp_storage_path);
         // send if there are any
         count($dump_files_full_paths) && $this->sendDumps($dump_files_full_paths);
-        
+
     }
-    
+
     /**
      * Rename the file so no-one will attempt to write in it while transmitting
      *
@@ -55,10 +53,10 @@ final class DumpRecordedRequests extends Command
     {
         $new_name = $file . "_batch_" . date('d-m-Y_H_i_s') . "_" . str_random(8);
         rename($file, $new_name);
-        
+
         return $new_name;
     }
-    
+
     /**
      * Will scan directory for any files prepared to be dumped to API backend
      * There could be more than just one file, because some dump requests can fail
@@ -76,7 +74,7 @@ final class DumpRecordedRequests extends Command
             return strpos($filename, "batch") !== false;
         }));
     }
-    
+
     /**
      * Send file with recorded requests to API backend server
      *
@@ -94,7 +92,7 @@ final class DumpRecordedRequests extends Command
             $concatenated_jsons = file_get_contents($dump_file);
             $concatenated_jsons = trim($concatenated_jsons, ",");// remove trailing commas
             $json_data          = '{"requests":[' . $concatenated_jsons . ']}';
-            
+
             $response = $this->guzzle_http_client->request(
                 'POST',
                 '/api/report/log',
@@ -105,13 +103,13 @@ final class DumpRecordedRequests extends Command
                     'body' => $json_data,
                 ]
             );
-            
+
             if ($response->getStatusCode() != 200) {
                 $this->log->alert("Http Analyzer's backend server could not handle the request", [
                     'response_code' => $response->getStatusCode(),
                     'response_content' => $response->getBody()->getContents(),
                 ]);
-                
+
                 // Stop sending because it is something wrong with the API server
                 // wait till the next cycle
                 return;
@@ -122,5 +120,5 @@ final class DumpRecordedRequests extends Command
             }
         }
     }
-    
+
 }
