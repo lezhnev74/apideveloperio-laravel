@@ -3,13 +3,10 @@ return [
     'httplog' => [
         // API key to sign requests to the API
         'api_key' => 'your key goes here',
-
         // Enable recording
         'enabled' => env('APIDEVELOPERIO_HTTPLOG_RECORDING_ENABLED', true),
-
         // a directory to put recorded requests at until dumped to the API backend
         'tmp_storage_path' => storage_path('logs/apideveloperio/httplog'),
-
         // Configure what data to strip from recorded requests
         'filtering' => [
             // App environment in which recording is off
@@ -28,6 +25,20 @@ return [
             'skip_url_matching_regexp' => [],
             // Avoid logging this http methods
             'skip_http_methods' => ['OPTIONS', 'HEAD'],
+        ],
+    ],
+    'textlog' => [
+        // API key to sign requests to the API
+        'api_key' => 'your key goes here',
+        // Enable recording
+        'enabled' => env('APIDEVELOPERIO_TEXTLOG_RECORDING_ENABLED', true),
+        // a directory to put recorded text logs at until dumped to the API backend
+        'tmp_storage_path' => storage_path('logs/apideveloperio/textlog'),
+
+        // Configure what data to strip from recorded requests
+        'filtering' => [
+            // App environment in which recording is off
+            'ignore_environment' => ['testing'],
         ],
     ],
 ];

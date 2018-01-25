@@ -4,7 +4,7 @@
  */
 
 
-namespace Apideveloper\Laravel\Laravel;
+namespace Apideveloper\Laravel\Laravel\HTTP;
 
 
 use GuzzleHttp\Client;

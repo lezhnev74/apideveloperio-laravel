@@ -5,7 +5,7 @@
 
 namespace Apideveloper\Laravel\Laravel\HTTP;
 
-use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
+use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Logging\Log;

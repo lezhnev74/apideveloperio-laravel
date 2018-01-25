@@ -1,10 +1,11 @@
 <?php
 
-namespace Apideveloper\Laravel\Tests;
+namespace Apideveloper\Laravel\Tests\HTTP;
 
 use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedRequests;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener;
-use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
+use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
+use Apideveloper\Laravel\Tests\LaravelApp;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -72,7 +73,7 @@ final class HTTPLogTest extends LaravelApp
     function test_it_dumps_data_to_file()
     {
         $app = $this->createApplication();
-        
+
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
@@ -94,7 +95,7 @@ final class HTTPLogTest extends LaravelApp
     function test_it_dumps_multipart_post_data_to_file()
     {
         $app = $this->createApplication();
-        
+
         /** @var Repository $config */
         $config           = app()[Repository::class];
         $tmp_storage_path = $this->getTmpPath(__LINE__);
