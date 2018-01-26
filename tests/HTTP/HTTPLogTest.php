@@ -2,9 +2,10 @@
 
 namespace Apideveloper\Laravel\Tests\HTTP;
 
+use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
 use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedLogs;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener;
-use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
+use Apideveloper\Laravel\Laravel\SendDumpsToDashboard;
 use Apideveloper\Laravel\Tests\LaravelApp;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
@@ -119,6 +120,7 @@ final class HTTPLogTest extends LaravelApp
     function test_it_sends_dump_to_api_backend()
     {
         $console_app = new Application($this->app, $this->app[Dispatcher::class], "1");
+        $config      = $console_app->getLaravel()[Repository::class];
 
         // I want to know that HTTP request was attempted to be send
         $fake_http_client = static::prophesize(GuzzleHttpClient::class);
@@ -128,6 +130,7 @@ final class HTTPLogTest extends LaravelApp
                 Argument::is('/api/report/log'),
                 Argument::is([
                     "headers" => ["content-type" => "application/json"],
+                    "query" => ["api_key" => $config->set('apideveloperio_logs.httplog.api_key')],
                     "body" => '{"requests":[{"sample"=>"data"}]}',
                 ])
             )
@@ -137,8 +140,7 @@ final class HTTPLogTest extends LaravelApp
             ->shouldBeCalled();
         $console_app->getLaravel()[GuzzleHttpClient::class] = $fake_http_client->reveal();
 
-        $console_app->resolve(DumpRecordedLogs::class);
-        $config = $console_app->getLaravel()[Repository::class];
+        $console_app->resolve(SendDumpsToDashboard::class);
 
         // Make up dump file
         $tmp_storage_path = $this->getTmpPath(__LINE__);
@@ -146,7 +148,7 @@ final class HTTPLogTest extends LaravelApp
         file_put_contents($tmp_storage_path . "/recorded_requests", '{"sample"=>"data"},', FILE_APPEND);
 
         // Initiate a command
-        $console_app->call('http_analyzer:dump');
+        $console_app->call('apideveloper:send-logs', ['--types' => 'http']);
 
         // clean up
         rmdir($tmp_storage_path);

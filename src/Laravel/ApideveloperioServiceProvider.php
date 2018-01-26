@@ -143,6 +143,11 @@ final class ApideveloperioServiceProvider extends ServiceProvider
                 $app[Log::class]
             );
         });
+        // Before app has been shut down, let's dump recorded logs into file
+        $this->app->terminating(function () {
+            $this->app[TextEventListener::class]->flush();
+        });
+
 
     }
 }

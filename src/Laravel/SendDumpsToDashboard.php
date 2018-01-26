@@ -13,7 +13,7 @@ use Illuminate\Log\Writer;
 
 class SendDumpsToDashboard extends Command
 {
-    protected $signature = 'apideveloper:send-logs';
+    protected $signature = 'apideveloper:send-logs {--types=http,text : Specify what logs to dump}';
     protected $description = 'Send recorded http requests and text logs to API backend and them remove them from local filesystem';
     /** @var Repository */
     private $config_repo;
@@ -40,8 +40,10 @@ class SendDumpsToDashboard extends Command
 
     public function handle()
     {
-        $this->sendHTTPLogs();
-        $this->sendTextLogs();
+        $types = explode(",", $this->option('types'));
+
+        in_array('http', $types) && $this->sendHTTPLogs();
+        in_array('text', $types) && $this->sendTextLogs();
     }
 
     function sendHTTPLogs()

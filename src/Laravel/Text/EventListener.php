@@ -50,7 +50,14 @@ class EventListener
             return;
         }
 
-        // Ok push the log to the buffer until dumped to the file
+
+        // Context can contain compound values, like objects, so I want to attempt to stringify them
+        array_walk_recursive($context, function (&$value, $key) {
+            if (is_object($value)) {
+                $value = (string)$value;
+            }
+        });
+
         $entry = [
             'level' => $level,
             'context' => (array)$context, // context is supposed to be array
@@ -66,6 +73,7 @@ class EventListener
             }
         }
 
+        // Ok push the log to the buffer until dumped to the file
         $this->buffer['messages'][] = $entry;
     }
 
@@ -100,7 +108,7 @@ class EventListener
         fwrite(STDERR, (string)$e);
     }
 
-    public function __destruct()
+    public function flush()
     {
         try {
             // Dump is performed upon application destruction (at the very end)
@@ -113,6 +121,13 @@ class EventListener
             $this->fail($e);
         }
     }
+
+    // This is an alternative way to initiate dumping to file
+    // So far not required since we hooked to app's shutdown sequence in service provider
+//    public function __destruct()
+//    {
+//        $this->flush();
+//    }
 
 
 }

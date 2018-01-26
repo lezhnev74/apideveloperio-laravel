@@ -27,7 +27,7 @@ class TextLogTest extends LaravelApp
         }
 
         // Check written logs
-        $listener->__destruct(); // imitate end of life
+        $listener->flush(); // imitate end of life
         $this->assertFileExists($tmp_storage_path . "/buffered_text_logs");
         $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
         $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
@@ -62,7 +62,7 @@ class TextLogTest extends LaravelApp
         $app[Writer::class]->alert($e);
 
         // Check data
-        $listener->__destruct(); // imitate end of life
+        $listener->flush(); // imitate end of life
         $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
         $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
 
@@ -83,7 +83,7 @@ class TextLogTest extends LaravelApp
         $app[Writer::class]->alert("message sent");
 
         $listener = $this->app[EventListener::class];
-        $listener->__destruct(); // imitate end of life
+        $listener->flush(); // imitate end of life
         $this->assertFileNotExists($tmp_storage_path . "/buffered_text_logs");
 
     }
