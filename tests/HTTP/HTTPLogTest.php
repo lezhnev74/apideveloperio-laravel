@@ -33,7 +33,7 @@ final class HTTPLogTest extends LaravelApp
         $response = new Response();
         $stub->onRequestHandled($request, $response)->shouldBeCalled();
 
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
@@ -87,7 +87,7 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = new Request();
         $response = new Response();
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
@@ -114,7 +114,7 @@ final class HTTPLogTest extends LaravelApp
         $data     = ['a' => 'some'];
         $request  = Request::create('/api/signup?b=12', 'POST', $data);
         $response = new Response();
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
@@ -178,7 +178,7 @@ final class HTTPLogTest extends LaravelApp
         // Now imitate $n requests and make sure n files are produces
         $n = rand(0, 100);
         for ($i = 0; $i < $n; $i++) {
-            if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
                 $app[Dispatcher::class]->fire('kernel.handled', [new Request(), new Response()]);
             } else {
                 $app[Dispatcher::class]->fire(new RequestHandled(new Request(), new Response()));
@@ -210,7 +210,7 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup');
         $response = new Response();
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
@@ -235,7 +235,7 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup', 'OPTIONs');
         $response = new Response();
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
@@ -260,7 +260,7 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup');
         $response = new Response();
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
         } else {
             $app[Dispatcher::class]->fire(new RequestHandled($request, $response));

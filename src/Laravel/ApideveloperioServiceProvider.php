@@ -45,7 +45,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
     {
         $event = app(Dispatcher::class);
 
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             // Here no object oriented events were available, so I have to listen to
             // legacy event names
 
@@ -80,7 +80,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         $event          = app(Dispatcher::class);
         $event_listener = app()[TextEventListener::class];
 
-        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+        if (Str::startsWith(app()->version(), ['5.2', '5.3'])) {
             $event->listen('illuminate.log', function ($level, $message, $context) use ($event_listener) {
                 $event_listener->onLog($level, $message, $context);
             });
