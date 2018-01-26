@@ -41,4 +41,4 @@ before_script:
   - composer config
   - composer require "illuminate/support:${ILLUMINATE_VERSION}" --no-update
   - composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --no-update
-  - composer update -vvv
+  - travis_wait composer update -vvv
