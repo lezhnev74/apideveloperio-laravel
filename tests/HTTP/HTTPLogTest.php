@@ -16,6 +16,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use Prophecy\Argument;
 
 final class HTTPLogTest extends LaravelApp
@@ -32,7 +33,11 @@ final class HTTPLogTest extends LaravelApp
         $response = new Response();
         $stub->onRequestHandled($request, $response)->shouldBeCalled();
 
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
     }
 
     function test_it_subscribed_on_query_executed_event()
@@ -82,7 +87,11 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = new Request();
         $response = new Response();
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
 
         // Make sure file is there
 
@@ -105,7 +114,11 @@ final class HTTPLogTest extends LaravelApp
         $data     = ['a' => 'some'];
         $request  = Request::create('/api/signup?b=12', 'POST', $data);
         $response = new Response();
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
 
         // Make sure file is there
 
@@ -165,7 +178,11 @@ final class HTTPLogTest extends LaravelApp
         // Now imitate $n requests and make sure n files are produces
         $n = rand(0, 100);
         for ($i = 0; $i < $n; $i++) {
-            $app[Dispatcher::class]->fire(new RequestHandled(new Request(), new Response()));
+            if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+                $app[Dispatcher::class]->fire('kernel.handled', [new Request(), new Response()]);
+            } else {
+                $app[Dispatcher::class]->fire(new RequestHandled(new Request(), new Response()));
+            }
         }
 
         $files_in_tmp_folder = array_filter(scandir($tmp_storage_path), function ($file) use ($tmp_storage_path) {
@@ -193,7 +210,11 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup');
         $response = new Response();
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
 
         // Make sure file is there
         $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");
@@ -214,7 +235,11 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup', 'OPTIONs');
         $response = new Response();
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
 
         // Make sure file is there
         $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");
@@ -235,7 +260,11 @@ final class HTTPLogTest extends LaravelApp
 
         $request  = Request::create('/auth/signup');
         $response = new Response();
-        $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            $app[Dispatcher::class]->fire('kernel.handled', [$request, $response]);
+        } else {
+            $app[Dispatcher::class]->fire(new RequestHandled($request, $response));
+        }
 
         // Make sure file is there
         $this->assertFileNotExists($tmp_storage_path . "/recorded_requests");

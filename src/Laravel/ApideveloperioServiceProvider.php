@@ -44,19 +44,35 @@ final class ApideveloperioServiceProvider extends ServiceProvider
     protected function listenHTTPRelatedEvents()
     {
         $event = app(Dispatcher::class);
-        $event->listen(RequestHandled::class, function (RequestHandled $event) {
-            $listener = app()[HTTPEventListener::class];
-            $listener->onRequestHandled($event->request, $event->response);
-        });
-        $event->listen(QueryExecuted::class, HTTPEventListener::class . '@onDatabaseQueryExecuted');
-        $event->listen(MessageLogged::class, function (MessageLogged $event) {
-            $listener = app()[HTTPEventListener::class];
-            $listener->onLog(
-                $event->level,
-                $event->message,
-                $event->context
-            );
-        });
+
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
+            // Here no object oriented events were available, so I have to listen to
+            // legacy event names
+
+            $event->listen('kernel.handled', function ($request, $response) {
+                $listener = app()[HTTPEventListener::class];
+                $listener->onRequestHandled($request, $response);
+            });
+            $event->listen(QueryExecuted::class, HTTPEventListener::class . '@onDatabaseQueryExecuted');
+            $event->listen('illuminate.log', function ($level, $message, $context) {
+                $listener = app()[HTTPEventListener::class];
+                $listener->onLog($level, $message, $context);
+            });
+        } else {
+            $event->listen(RequestHandled::class, function (RequestHandled $event) {
+                $listener = app()[HTTPEventListener::class];
+                $listener->onRequestHandled($event->request, $event->response);
+            });
+            $event->listen(QueryExecuted::class, HTTPEventListener::class . '@onDatabaseQueryExecuted');
+            $event->listen(MessageLogged::class, function (MessageLogged $event) {
+                $listener = app()[HTTPEventListener::class];
+                $listener->onLog(
+                    $event->level,
+                    $event->message,
+                    $event->context
+                );
+            });
+        }
     }
 
     protected function listenTextLogRelatedEvents()
@@ -64,7 +80,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         $event          = app(Dispatcher::class);
         $event_listener = app()[TextEventListener::class];
 
-        if (Str::startsWith(app()::VERSION, ['5.1', '5.2', '5.3'])) {
+        if (Str::startsWith(app()::VERSION, ['5.2', '5.3'])) {
             $event->listen('illuminate.log', function ($level, $message, $context) use ($event_listener) {
                 $event_listener->onLog($level, $message, $context);
             });

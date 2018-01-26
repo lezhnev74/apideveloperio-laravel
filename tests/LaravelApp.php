@@ -40,7 +40,7 @@ abstract class LaravelApp extends TestCase
         return $app;
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         `rm -rf {$this->getTmpDir()}*`;
         parent::tearDown();
