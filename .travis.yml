@@ -35,8 +35,9 @@ matrix:
       env: ILLUMINATE_VERSION=5.5.*
 
 before_script:
+  - composer self-update
   - composer config secure-http false
   - composer config disable-tls true
   - composer config
   - composer require "illuminate/support:${ILLUMINATE_VERSION}" --no-update
-  - composer update -vvv
+  - composer install -vvv
