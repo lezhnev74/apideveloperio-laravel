@@ -33,6 +33,8 @@ class SendDumpsToDashboard extends Command
         $this->config_repo = $config_repo;
         $this->guzzle      = $guzzle;
         $this->log         = $log;
+
+        parent::__construct();
     }
 
 
@@ -44,6 +46,11 @@ class SendDumpsToDashboard extends Command
 
     function sendHTTPLogs()
     {
+        $enabled = $this->config_repo->get('apideveloperio_logs.httplog.enabled', false);
+        if (!$enabled) {
+            // this featured is disabled, cancel operation
+            return;
+        }
 
         $url         = '/api/report/log';
         $batch_key   = "requests";
@@ -59,6 +66,11 @@ class SendDumpsToDashboard extends Command
 
     function sendTextLogs()
     {
+        $enabled = $this->config_repo->get('apideveloperio_logs.textlog.enabled', false);
+        if (!$enabled) {
+            // this featured is disabled, cancel operation
+            return;
+        }
 
         $url         = '/api/report/log-text';
         $batch_key   = "entries";
@@ -66,8 +78,8 @@ class SendDumpsToDashboard extends Command
         $file_prefix = $this->config_repo->get('apideveloperio_logs.textlog.dump_file_prefix', 'buffered_text_logs');
         $folder      = $this->config_repo->get('apideveloperio_logs.textlog.tmp_storage_path', 'unknown_path');
 
-        $dump_files_full_paths = $this->findDumpFiles($folder, $file_prefix);
 
+        $dump_files_full_paths = $this->findDumpFiles($folder, $file_prefix);
         count($dump_files_full_paths) && $this->sendDumps($url, $api_key, $dump_files_full_paths, $batch_key);
     }
 
@@ -83,6 +95,19 @@ class SendDumpsToDashboard extends Command
      */
     protected function findDumpFiles($dump_directory, $file_prefix)
     {
+        if (!is_dir($dump_directory) || !is_readable($dump_directory)) {
+            // directory where logs are supposed to be stored is not discoverable
+            // just skip it and continue
+            return [];
+        }
+
+        // Before finding files, I want to rename last file and thus mark it for sending
+        $current_file = $dump_directory . "/" . $file_prefix;
+        if (is_file($current_file) && filesize($current_file)) {
+            rename($current_file, $current_file . "_batch_" . date("d-m-Y_H_i_s") . "_" . str_random(8));
+        }
+
+        // Now we are ready to look for files to send
         return array_map(function ($filename) use ($dump_directory) {
             return $dump_directory . "/" . $filename;
         }, array_filter(scandir($dump_directory), function ($filename) use ($file_prefix) {

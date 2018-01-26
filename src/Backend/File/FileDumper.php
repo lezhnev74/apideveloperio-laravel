@@ -45,7 +45,7 @@ class FileDumper implements LogsDumper
         //
         // Now persist data till the next data dump to the API backend
         //
-        if (!is_dir($tmp_path_folder) && !mkdir($tmp_path_folder)) {
+        if (!is_dir($tmp_path_folder) && !mkdir($tmp_path_folder, 0777, true)) {
             throw new \Exception("Unable to create a directory for storing buffered texts at " . $tmp_path_folder);
         }
 

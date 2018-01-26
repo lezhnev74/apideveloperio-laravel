@@ -30,7 +30,6 @@ final class ApideveloperioServiceProvider extends ServiceProvider
             __DIR__ . '/../../config/apideveloperio_logs.php' => config_path('apideveloperio_logs.php'),
         ]);
 
-
         //
         // HTTP Log related
         //
@@ -96,11 +95,13 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         $this->app->bind(GuzzleHttpClient::class, function ($app) {
             $config = $app[Repository::class];
 
-            $api_host = $config->get('apideveloperio_logs.api_host', 'backend.apideveloper.io');
+            $api_host            = $config->get('apideveloperio_logs.api_host', 'backend.apideveloper.io');
+            $ignore_ssl_problems = $config->get('apideveloperio_logs.api_host_ignore_ssl', false);
 
             return new GuzzleHttpClient([
                 'base_uri' => 'https://' . $api_host,
-                'http_errors' => false
+                'http_errors' => false,
+                'verify' => !$ignore_ssl_problems,
             ]);
         });
 

@@ -2,7 +2,7 @@
 
 namespace Apideveloper\Laravel\Tests\HTTP;
 
-use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedRequests;
+use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedLogs;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener;
 use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
 use Apideveloper\Laravel\Tests\LaravelApp;
@@ -137,7 +137,7 @@ final class HTTPLogTest extends LaravelApp
             ->shouldBeCalled();
         $console_app->getLaravel()[GuzzleHttpClient::class] = $fake_http_client->reveal();
 
-        $console_app->resolve(DumpRecordedRequests::class);
+        $console_app->resolve(DumpRecordedLogs::class);
         $config = $console_app->getLaravel()[Repository::class];
 
         // Make up dump file
