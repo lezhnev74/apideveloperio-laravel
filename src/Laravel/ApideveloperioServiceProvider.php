@@ -5,7 +5,6 @@ namespace Apideveloper\Laravel\Laravel;
 use Apideveloper\Laravel\Backend\File\FileDumper;
 use Apideveloper\Laravel\Backend\File\PersistingStrategy;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener as HTTPEventListener;
-use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
 use Apideveloper\Laravel\Laravel\Text\EventListener as TextEventListener;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -92,9 +91,22 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         );
 
         //
+        // Prepare Guzzle Http Client to communicate with API backend
+        //
+        $this->app->bind(GuzzleHttpClient::class, function ($app) {
+            $config = $app[Repository::class];
+
+            $api_host = $config->get('apideveloperio_logs.api_host', 'backend.apideveloper.io');
+
+            return new GuzzleHttpClient([
+                'base_uri' => 'https://' . $api_host,
+                'http_errors' => false
+            ]);
+        });
+
+        //
         // HTTPLog related
         //
-
         // Make sure event listener has just single instance
         $this->app->singleton(HTTPEventListener::class, function ($app) use ($app_execution_id) {
             $config = $app[Repository::class];
@@ -107,25 +119,9 @@ final class ApideveloperioServiceProvider extends ServiceProvider
                     $config->get('apideveloperio_logs.httplog.tmp_storage_path', 'unknown_path'),
                     $config->get('apideveloperio_logs.httplog.dump_files_max_count', 100),
                     $config->get('apideveloperio_logs.httplog.dump_file_max_size', 10 * 1024 * 1024),
-                    'recorded_requests'
+                    $config->get('apideveloperio_logs.httplog.dump_file_prefix', 'recorded_requests')
                 ))
             );
-        });
-
-        //
-        // Prepare Guzzle Http Client to communicate with API backend
-        //
-        $this->app->bind(GuzzleHttpClient::class, function ($app) {
-            $config = $app[Repository::class];
-
-            $api_host = $config->get('apideveloperio_logs.api_host', 'backend.apideveloper.io');
-            $api_key  = $config->get('apideveloperio_logs.httplog.api_key');
-
-            return new GuzzleHttpClient([
-                'base_uri' => 'https://' . $api_host,
-                'http_errors' => false,
-                'query' => ['api_key' => $api_key],
-            ]);
         });
 
         //
@@ -140,7 +136,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
                     $config->get('apideveloperio_logs.textlog.tmp_storage_path', 'unknown_path'),
                     $config->get('apideveloperio_logs.textlog.dump_files_max_count', 100),
                     $config->get('apideveloperio_logs.textlog.dump_file_max_size', 10 * 1024 * 1024),
-                    'buffered_text_logs'
+                    $config->get('apideveloperio_logs.textlog.dump_file_prefix', 'buffered_text_logs')
                 )),
                 $app[Repository::class],
                 $app[Log::class]

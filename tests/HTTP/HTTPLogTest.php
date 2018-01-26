@@ -4,7 +4,7 @@ namespace Apideveloper\Laravel\Tests\HTTP;
 
 use Apideveloper\Laravel\Laravel\HTTP\DumpRecordedRequests;
 use Apideveloper\Laravel\Laravel\HTTP\EventListener;
-use Apideveloper\Laravel\Laravel\HTTP\GuzzleHttpClient;
+use Apideveloper\Laravel\Laravel\GuzzleHttpClient;
 use Apideveloper\Laravel\Tests\LaravelApp;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
