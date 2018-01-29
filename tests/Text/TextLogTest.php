@@ -10,6 +10,7 @@ namespace Apideveloper\Laravel\Tests\Text;
 use Apideveloper\Laravel\Laravel\Text\EventListener;
 use Apideveloper\Laravel\Laravel\Text\ExceptionFormatter;
 use Apideveloper\Laravel\Tests\LaravelApp;
+use Carbon\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Log\Writer;
 
@@ -17,6 +18,7 @@ class TextLogTest extends LaravelApp
 {
     function test_it_catches_and_dumps_log_entries()
     {
+        Carbon::setTestNow();
         $app              = $this->createApplication();
         $tmp_storage_path = $app[Repository::class]->get('apideveloperio_logs.textlog.tmp_storage_path');
         $listener         = $app[EventListener::class];
@@ -39,6 +41,7 @@ class TextLogTest extends LaravelApp
                 "context" => [
                     "message_index" => 0,
                 ],
+                "date" => Carbon::now()->toIso8601String(),
             ],
             [
                 "level" => "alert",
@@ -46,6 +49,7 @@ class TextLogTest extends LaravelApp
                 "context" => [
                     "message_index" => 1,
                 ],
+                "date" => Carbon::now()->toIso8601String(),
             ],
         ], $json_decoded[0]['messages']);
 

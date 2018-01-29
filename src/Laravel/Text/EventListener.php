@@ -7,6 +7,7 @@
 namespace Apideveloper\Laravel\Laravel\Text;
 
 use Apideveloper\Laravel\Backend\File\LogsDumper;
+use Carbon\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Log\Writer;
 
@@ -36,7 +37,8 @@ class EventListener
         $this->buffer = [
             'meta' => [
                 'env' => app()->environment(),
-                'requestId' => $app_execution_id // link to handled http request if any
+                'requestId' => $app_execution_id, // link to handled http request if any
+                'io_channel' => app()->runningInConsole() ? "console" : "http",
             ],
             'messages' => [],
         ];
@@ -61,6 +63,7 @@ class EventListener
         $entry = [
             'level' => $level,
             'context' => (array)$context, // context is supposed to be array
+            'date' => Carbon::now()->toIso8601String(),
         ];
 
         if ($message instanceof \Exception) {
