@@ -61,8 +61,11 @@ class EventListener
         // Laravel's default behaviour is to throw normal error message
         // and put exception in the context under 'exception' key
         // see 'laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php'
-        if (array_get($context, 'exception') instanceof \Exception) {
-            $entry['exception'] = ExceptionFormatter::fromException($context['exception'])->toArray();
+        if (
+            ($e = array_get($context, 'exception')) instanceof \Exception ||
+            ($e = $message) instanceof \Exception
+        ) {
+            $entry['exception'] = ExceptionFormatter::fromException($e)->toArray();
             unset($context['exception']);
         } else {
             if (is_scalar($message)) {
