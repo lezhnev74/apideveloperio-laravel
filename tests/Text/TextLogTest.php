@@ -12,6 +12,7 @@ use Apideveloper\Laravel\Laravel\Text\ExceptionFormatter;
 use Apideveloper\Laravel\Tests\LaravelApp;
 use Carbon\Carbon;
 use Illuminate\Config\Repository;
+use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Log\Writer;
 
 class TextLogTest extends LaravelApp
@@ -61,9 +62,9 @@ class TextLogTest extends LaravelApp
         $tmp_storage_path = $app[Repository::class]->get('apideveloperio_logs.textlog.tmp_storage_path');
         $listener         = $app[EventListener::class];
 
-        $previous_exception = new \DomainException("other message", 99);
-        $e                  = new \Exception("", 100, $previous_exception);
-        $app[Writer::class]->alert($e);
+        $previous_exception = new \DomainException("Inner exception", 99);
+        $e                  = new \Exception("Outer exception", 100, $previous_exception);
+        $app[Handler::class]->report($e);
 
         // Check data
         $listener->flush(); // imitate end of life
@@ -75,6 +76,7 @@ class TextLogTest extends LaravelApp
         $this->assertCount(2, $json_decoded[0]['messages'][0]['exception']);
         $this->assertEquals(ExceptionFormatter::fromException($e)->toArray(),
             $json_decoded[0]['messages'][0]['exception']);
+        $this->assertArrayNotHasKey('message', $json_decoded[0]['messages'][0]);
 
     }
 
@@ -86,9 +88,7 @@ class TextLogTest extends LaravelApp
         $app[Repository::class]->set('apideveloperio_logs.textlog.enabled', false);
         $app[Writer::class]->alert("message sent");
 
-        $listener = $this->app[EventListener::class];
         $listener->flush(); // imitate end of life
         $this->assertFileNotExists($tmp_storage_path . "/buffered_text_logs");
-
     }
 }

@@ -52,22 +52,18 @@ class EventListener
             return;
         }
 
-
-        // Context can contain compound values, like objects, so I want to attempt to stringify them
-        array_walk_recursive($context, function (&$value, $key) {
-            if (is_object($value)) {
-                $value = (string)$value;
-            }
-        });
-
         $entry = [
             'level' => $level,
-            'context' => (array)$context, // context is supposed to be array
             'date' => Carbon::now()->toIso8601String(),
         ];
 
-        if ($message instanceof \Exception) {
-            $entry['exception'] = ExceptionFormatter::fromException($message)->toArray();
+        // Check exception in the context array
+        // Laravel's default behaviour is to throw normal error message
+        // and put exception in the context under 'exception' key
+        // see 'laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php'
+        if (array_get($context, 'exception') instanceof \Exception) {
+            $entry['exception'] = ExceptionFormatter::fromException($context['exception'])->toArray();
+            unset($context['exception']);
         } else {
             if (is_scalar($message)) {
                 $entry['message'] = $message;
@@ -75,6 +71,15 @@ class EventListener
                 $entry['message'] = (array)$message;
             }
         }
+
+        // Transform context to transferrable values (scalars and arrays)
+        // Context can contain compound values, like objects, so I want to attempt to stringify them
+        array_walk_recursive($context, function (&$value, $key) {
+            if (is_object($value)) {
+                $value = (string)$value;
+            }
+        });
+        $entry['context'] = (array)$context; // context is supposed to be array
 
         // Ok push the log to the buffer until dumped to the file
         $this->buffer['messages'][] = $entry;
