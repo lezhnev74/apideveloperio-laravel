@@ -9,7 +9,7 @@ namespace Apideveloper\Laravel\Laravel;
 
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Log\Writer;
+use Psr\Log\LoggerInterface;
 
 class SendDumpsToDashboard extends Command
 {
@@ -19,16 +19,16 @@ class SendDumpsToDashboard extends Command
     private $config_repo;
     /** @var GuzzleHttpClient */
     private $guzzle;
-    /** @var Writer */
+    /** @var LoggerInterface */
     private $log;
 
     /**
      * SendDumpsToDashboard constructor.
      * @param Repository $config_repo
      * @param GuzzleHttpClient $guzzle
-     * @param Writer $log
+     * @param LoggerInterface $log
      */
-    public function __construct(Repository $config_repo, GuzzleHttpClient $guzzle, Writer $log)
+    public function __construct(Repository $config_repo, GuzzleHttpClient $guzzle, LoggerInterface $log)
     {
         $this->config_repo = $config_repo;
         $this->guzzle      = $guzzle;

@@ -9,9 +9,9 @@ namespace Apideveloper\Laravel\Laravel\HTTP;
 use Apideveloper\Laravel\Backend\File\LogsDumper;
 use Apideveloper\Laravel\Backend\LoggedHTTPRequest;
 use Illuminate\Config\Repository;
-use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -29,7 +29,7 @@ class EventListener
     ];
     /** @var  Repository */
     private $config_repo;
-    /** @var  Log */
+    /** @var  LoggerInterface */
     private $log_writer;
     /** @var LogsDumper */
     private $dumper;
@@ -41,7 +41,7 @@ class EventListener
      * @param Log $log
      * @param LogsDumper $dumper
      */
-    public function __construct(Repository $config_repo, Log $log, LogsDumper $dumper)
+    public function __construct(Repository $config_repo, LoggerInterface $log, LogsDumper $dumper)
     {
         $this->config_repo = $config_repo;
         $this->log_writer  = $log;

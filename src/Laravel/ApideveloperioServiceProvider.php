@@ -8,12 +8,12 @@ use Apideveloper\Laravel\Laravel\HTTP\EventListener as HTTPEventListener;
 use Apideveloper\Laravel\Laravel\Text\EventListener as TextEventListener;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 final class ApideveloperioServiceProvider extends ServiceProvider
@@ -131,7 +131,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
             return new HTTPEventListener(
 //                $app_execution_id, // TODO link text logs to http requests
                 $app[Repository::class],
-                $app[Log::class],
+                $app[LoggerInterface::class],
                 new FileDumper(new PersistingStrategy(
                     $config->get('apideveloperio_logs.httplog.tmp_storage_path', 'unknown_path'),
                     $config->get('apideveloperio_logs.httplog.dump_files_max_count', 100),
@@ -156,7 +156,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
                     $config->get('apideveloperio_logs.textlog.dump_file_prefix', 'buffered_text_logs')
                 )),
                 $app[Repository::class],
-                $app[Log::class]
+                $app[LoggerInterface::class]
             );
         });
         // Before app has been shut down, let's dump recorded logs into file

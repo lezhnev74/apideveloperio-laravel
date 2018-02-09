@@ -9,14 +9,14 @@ namespace Apideveloper\Laravel\Laravel\Text;
 use Apideveloper\Laravel\Backend\File\LogsDumper;
 use Carbon\Carbon;
 use Illuminate\Config\Repository;
-use Illuminate\Log\Writer;
+use Psr\Log\LoggerInterface;
 
 class EventListener
 {
     private $buffer = [];
     /** @var  Repository */
     private $config_repo;
-    /** @var  Writer */
+    /** @var  LoggerInterface */
     private $log_writer;
     /** @var LogsDumper */
     private $dumper;
@@ -26,9 +26,9 @@ class EventListener
      * @param string $app_execution_id the key of current app execution
      * @param LogsDumper $dumper
      * @param Repository $config_repo
-     * @param Writer $log_writer
+     * @param LoggerInterface $log_writer
      */
-    public function __construct($app_execution_id, LogsDumper $dumper, Repository $config_repo, Writer $log_writer)
+    public function __construct($app_execution_id, LogsDumper $dumper, Repository $config_repo, LoggerInterface $log_writer)
     {
         $this->dumper      = $dumper;
         $this->config_repo = $config_repo;

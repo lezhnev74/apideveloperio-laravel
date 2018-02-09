@@ -13,7 +13,7 @@ use Apideveloper\Laravel\Tests\LaravelApp;
 use Carbon\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Exceptions\Handler;
-use Illuminate\Log\Writer;
+use Psr\Log\LoggerInterface;
 
 class TextLogTest extends LaravelApp
 {
@@ -26,7 +26,7 @@ class TextLogTest extends LaravelApp
 
         $messages = ["ddd fff", "ztt rre"];
         foreach ($messages as $i => $message) {
-            $app[Writer::class]->alert($message, ["message_index" => $i]);
+            $app[LoggerInterface::class]->alert($message, ["message_index" => $i]);
         }
 
         // Check written logs
@@ -86,7 +86,7 @@ class TextLogTest extends LaravelApp
         $tmp_storage_path = $app[Repository::class]->get('apideveloperio_logs.textlog.tmp_storage_path');
         $listener         = $app[EventListener::class];
         $app[Repository::class]->set('apideveloperio_logs.textlog.enabled', false);
-        $app[Writer::class]->alert("message sent");
+        $app[LoggerInterface::class]->alert("message sent");
 
         $listener->flush(); // imitate end of life
         $this->assertFileNotExists($tmp_storage_path . "/buffered_text_logs");
