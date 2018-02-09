@@ -7,7 +7,7 @@ namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Logging\Log;
+use Psr\Log\LoggerInterface;
 
 final class DumpRecordedRequests extends Command
 {
@@ -15,13 +15,13 @@ final class DumpRecordedRequests extends Command
     protected $description = 'Send recorded http requests to API backend and them remove them from local filesystem';
     /** @var  Repository */
     private $config_repo;
-    /** @var  Log */
+    /** @var  LoggerInterface */
     private $log;
     /** @var  GuzzleHttpClient */
     private $guzzle_http_client;
     
     
-    public function __construct(Repository $config_repo, Log $log, GuzzleHttpClient $client)
+    public function __construct(Repository $config_repo, LoggerInterface $log, GuzzleHttpClient $client)
     {
         $this->config_repo        = $config_repo;
         $this->log                = $log;
