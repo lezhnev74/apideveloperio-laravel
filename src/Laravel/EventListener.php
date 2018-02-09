@@ -8,7 +8,7 @@ namespace HttpAnalyzer\Laravel;
 
 use HttpAnalyzer\Backend\LoggedRequest;
 use Illuminate\Config\Repository;
-use Illuminate\Contracts\Logging\Log;
+use Psr\Log\LoggerInterface;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +28,7 @@ class EventListener
     ];
     /** @var  Repository */
     private $config_repo;
-    /** @var  Log */
+    /** @var  LoggerInterface */
     private $log_writer;
     
     /**
@@ -36,7 +36,7 @@ class EventListener
      *
      * @param Repository $config_repo
      */
-    public function __construct(Repository $config_repo, Log $log)
+    public function __construct(Repository $config_repo, LoggerInterface $log)
     {
         $this->config_repo = $config_repo;
         $this->log_writer  = $log;
