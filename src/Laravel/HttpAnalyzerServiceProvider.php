@@ -4,7 +4,7 @@ namespace HttpAnalyzer\Laravel;
 
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Logging\Log;
+use Psr\Log\LoggerInterface;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Log\Events\MessageLogged;
@@ -63,7 +63,7 @@ final class HttpAnalyzerServiceProvider extends ServiceProvider
         $this->app->singleton(EventListener::class, function ($app) {
             return new EventListener(
                 $app[Repository::class],
-                $app[Log::class]
+                $app[LoggerInterface::class]
             );
         });
         
