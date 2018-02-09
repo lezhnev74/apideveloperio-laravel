@@ -8,13 +8,13 @@ use HttpAnalyzer\Laravel\GuzzleHttpClient;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Application;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Logging\Log;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
 
 final class PackageTest extends LaravelApp
 {
@@ -252,9 +252,9 @@ final class PackageTest extends LaravelApp
         
         // Fake log writer
         // Log shoudl not be called because logging is only called on problem
-        $log_prophecy = static::prophesize(Log::class);
+        $log_prophecy = static::prophesize(LoggerInterface::class);
         $log_prophecy->alert(Argument::cetera())->shouldNotBeCalled();
-        $app[Log::class] = $log_prophecy->reveal();
+        $app[LoggerInterface::class] = $log_prophecy->reveal();
         
         // Fake Connection
         $pdo_prophecy = static::prophesize(\PDO::class);
