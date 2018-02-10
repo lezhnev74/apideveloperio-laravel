@@ -21,7 +21,7 @@ composer require "lezhnev74/apideveloperio-laravel=~6.0"
  
 ```php
     'providers' => [
-        ...
+        //...
         '\Apideveloper\Laravel\Laravel\ApideveloperioServiceProvider'
     ],
 ```
@@ -39,7 +39,7 @@ To dump recorded logs to the Dashboard. Open your `app/Console/Kernel.php` and a
 #file: app/Console/Kernel.php
 ....
 protected $commands = [
-    ...
+    //...
     '\Apideveloper\Laravel\Laravel\SendDumpsToDashboard',
 ];
 
@@ -92,6 +92,10 @@ That happens due to some Symfony's Request issue. Try using this package - https
 When someone refers to particular request/response app cycle, it is best to know it's unique ID.
  Knowing it, you can easily find it on the Dashboard.
  Just add a middleware (like this one https://github.com/softonic/laravel-middleware-request-id) which will append a unique ID to each response your app provides.
+
+## 🏆 Contributors
+- [Owen Melbourne](https://github.com/OwenMelbz) - improved dates conversions
+- [Mark Topper](https://github.com/marktopper) - added support for Laravel 5.6
 
 ## Support
 Just open a new Issue here and get help.

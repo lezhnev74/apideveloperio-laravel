@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=5.6",
-        "illuminate/support": "~5.6",
+        "illuminate/support": "~5.2",
         "guzzlehttp/guzzle": "~5.0|~6.0",
         "ramsey/uuid": "~3.0"
     },
