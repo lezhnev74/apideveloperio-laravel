@@ -28,7 +28,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../../config/apideveloperio_logs.php' => config_path('apideveloperio_logs.php'),
-        ]);
+        ], 'config');
 
         //
         // HTTP Log related
