@@ -99,7 +99,7 @@ final class ApideveloperioServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $app_execution_id = Uuid::uuid4()->toString();
+        $app_session_id = Uuid::uuid4()->toString();
 
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/apideveloperio_logs.php', 'apideveloperio_logs'
@@ -125,11 +125,11 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         // HTTPLog related
         //
         // Make sure event listener has just single instance
-        $this->app->singleton(HTTPEventListener::class, function ($app) use ($app_execution_id) {
+        $this->app->singleton(HTTPEventListener::class, function ($app) use ($app_session_id) {
             $config = $app[Repository::class];
 
             return new HTTPEventListener(
-//                $app_execution_id, // TODO link text logs to http requests
+                $app_session_id,
                 $app[Repository::class],
                 $app[LoggerInterface::class],
                 new FileDumper(new PersistingStrategy(
@@ -144,11 +144,11 @@ final class ApideveloperioServiceProvider extends ServiceProvider
         //
         // Text log related
         //
-        $this->app->singleton(TextEventListener::class, function ($app) use ($app_execution_id) {
+        $this->app->singleton(TextEventListener::class, function ($app) use ($app_session_id) {
             $config = $app[Repository::class];
 
             return new TextEventListener(
-                $app_execution_id,
+                $app_session_id,
                 new FileDumper(new PersistingStrategy(
                     $config->get('apideveloperio_logs.textlog.tmp_storage_path', 'unknown_path'),
                     $config->get('apideveloperio_logs.textlog.dump_files_max_count', 100),

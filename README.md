@@ -29,7 +29,7 @@ composer require "lezhnev74/apideveloperio-laravel=~6.0"
 #### 3. Run this command to publish configuration file to your `/config` folder.
 
 ```
-php artisan vendor:publish --provider="\Apideveloper\Laravel\Laravel\ApideveloperioServiceProvider"
+php artisan vendor:publish --provider="Apideveloper\Laravel\Laravel\ApideveloperioServiceProvider"
 ```
 
 #### 4. Set-up CRON command 

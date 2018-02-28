@@ -27,6 +27,8 @@ class EventListener
         'external_queries' => [],
         'log_entries' => [],
     ];
+    /** @var string */
+    private $session_id;
     /** @var  Repository */
     private $config_repo;
     /** @var  LoggerInterface */
@@ -37,12 +39,14 @@ class EventListener
     /**
      * EventListener constructor.
      *
+     * @param string $session_id ;
      * @param Repository $config_repo
      * @param Log $log
      * @param LogsDumper $dumper
      */
-    public function __construct(Repository $config_repo, LoggerInterface $log, LogsDumper $dumper)
+    public function __construct($session_id, Repository $config_repo, LoggerInterface $log, LogsDumper $dumper)
     {
+        $this->session_id  = $session_id;
         $this->config_repo = $config_repo;
         $this->log_writer  = $log;
         $this->dumper      = $dumper;
@@ -68,6 +72,7 @@ class EventListener
                 $request,
                 $response,
                 $time_to_response,
+                $this->session_id,
                 implode("\n\n", $this->recorded_data['log_entries']),
                 $this->recorded_data['external_queries'],
                 $this->config_repo->get('apideveloperio_logs.httplog.filtering')

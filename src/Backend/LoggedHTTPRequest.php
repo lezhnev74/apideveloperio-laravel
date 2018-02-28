@@ -26,6 +26,7 @@ final class LoggedHTTPRequest
         Request $request,
         Response $response,
         $time_to_response_ms,
+        $session_id,
         $log_text = null,
         $external_queries = null,
         $filtering_config = []
@@ -38,6 +39,7 @@ final class LoggedHTTPRequest
         
         // Append other data
         $this->data['ttr_ms'] = $time_to_response_ms;
+        $this->data['session_id'] = $session_id;
         // Make sure log is not longer than 30000 bytes
         if ($log_text && $this->dataShouldBeRecorded('log')) {
             $this->data['log'] = substr($log_text, 0, 30000);

@@ -35,6 +35,7 @@ final class LoggedRequestTest extends TestCase
             $request,
             $response,
             100,
+            '123',
             null,
             null,
             ['strip_data' => ["request_headers", "request_body", "response_headers", "response_body"]]
@@ -43,6 +44,7 @@ final class LoggedRequestTest extends TestCase
 
         $this->assertEquals(
             [
+                "session_id" => "123",
                 "full_url" => "http://example.org/shop/cart.php?num=one&price=10",
                 "http_method" => "post",
                 "user_ip" => "192.167.35.22",
@@ -96,6 +98,7 @@ final class LoggedRequestTest extends TestCase
             $request,
             $response,
             100,
+            "123",
             "line1\nline2\n",
             [
                 [
@@ -118,6 +121,7 @@ final class LoggedRequestTest extends TestCase
 
         $this->assertEquals(
             [
+                "session_id" => "123",
                 "full_url" => "http://example.org/shop/cart.php?num=one&price=10",
                 "http_method" => "post",
                 "user_ip" => "192.167.35.22",
@@ -207,6 +211,7 @@ final class LoggedRequestTest extends TestCase
             $request,
             new Response('', 200),
             100,
+            "123",
             null,
             null,
             ['strip_header_values' => ["HOST", "cache-CONtrol"]]
@@ -239,6 +244,7 @@ final class LoggedRequestTest extends TestCase
             $request,
             new Response('', 200),
             100,
+            "123",
             null,
             null,
             [
@@ -272,7 +278,7 @@ final class LoggedRequestTest extends TestCase
 
         $response = new Response('', 200);
 
-        $logged_request = new LoggedHTTPRequest($request, $response, 100);
+        $logged_request = new LoggedHTTPRequest($request, $response, 100, "123");
         $data           = $logged_request->toArray();
 
         $this->assertTrue(array_search(['name' => 'user-agent', 'value' => ''],
