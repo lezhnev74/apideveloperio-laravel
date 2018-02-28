@@ -23,12 +23,12 @@ class EventListener
 
     /**
      * EventListener constructor.
-     * @param string $app_execution_id the key of current app execution
+     * @param string $session_id the key of current app execution (session, used to unite log entry within the same session)
      * @param LogsDumper $dumper
      * @param Repository $config_repo
      * @param LoggerInterface $log_writer
      */
-    public function __construct($app_execution_id, LogsDumper $dumper, Repository $config_repo, LoggerInterface $log_writer)
+    public function __construct($session_id, LogsDumper $dumper, Repository $config_repo, LoggerInterface $log_writer)
     {
         $this->dumper      = $dumper;
         $this->config_repo = $config_repo;
@@ -37,7 +37,7 @@ class EventListener
         $this->buffer = [
             'meta' => [
                 'env' => app()->environment(),
-                'requestId' => $app_execution_id, // link to handled http request if any
+                'session_id' => $session_id,
                 'io_channel' => app()->runningInConsole() ? "console" : "http",
             ],
             'messages' => [],
