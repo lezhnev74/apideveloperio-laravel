@@ -159,8 +159,16 @@ class SendDumpsToDashboard extends Command
                 // wait till the next cycle
                 return;
             } else {
-                $this->log->debug('recorded logs sent to apideveloper.io dashboard',
-                    ['dump_file_name' => $dump_file, 'filesize' => filesize($dump_file)]);
+                $logOnSend = $this->config_repo->get('apideveloperio_logs.log');
+                if ($logOnSend) {
+                    $this->log->debug(
+                        'recorded logs sent to apideveloper.io dashboard',
+                        [
+                            'dump_file_name' => $dump_file,
+                            'filesize' => filesize($dump_file),
+                        ]
+                    );
+                }
                 unlink($dump_file);
             }
         }
