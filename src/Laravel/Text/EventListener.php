@@ -75,7 +75,7 @@ class EventListener
             }
         }
 
-        // Transform context to transferrable values (scalars and arrays)
+        // Transform context to transferable values (scalars and arrays)
         // Context can contain compound values, like objects, so I want to attempt to stringify them
         array_walk_recursive($context, function (&$value, $key) {
             if (is_object($value)) {
@@ -116,7 +116,7 @@ class EventListener
     {
         // do nothing since there is an issue with logging
         // the only thing we can do is throw something to the stderr
-        fwrite(STDERR, (string)$e);
+        fwrite(fopen('php://stderr', 'w'), (string)$e);
     }
 
     public function flush()
