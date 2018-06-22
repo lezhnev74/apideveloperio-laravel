@@ -32,3 +32,4 @@ Homestead.json
 tests/tmp/
 tests/vendors/*/vendor/te
 test_multiple_versions/
+composer.lock
