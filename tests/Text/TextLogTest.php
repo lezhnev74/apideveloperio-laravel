@@ -17,6 +17,74 @@ use Psr\Log\LoggerInterface;
 
 class TextLogTest extends LaravelApp
 {
+    function test_it_removes_duplicates()
+    {
+        Carbon::setTestNow();
+        $app              = $this->createApplication();
+        $config           = app()[Repository::class];
+        $tmp_storage_path = $config->get('apideveloperio_logs.textlog.tmp_storage_path');
+        $listener         = $app[EventListener::class];
+
+
+        // 0. No duplicates removed by default
+        $app[LoggerInterface::class]->alert("some message", ["some" => "value"]);
+        $app[LoggerInterface::class]->alert("some message", ["some" => "value"]);
+        $listener->flush(); // imitate end of life
+
+        $this->assertFileExists($tmp_storage_path . "/buffered_text_logs");
+        $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
+        $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
+
+        $this->assertEquals([
+            [
+                "level" => "alert",
+                "message" => "some message",
+                "context" => ["some" => "value"],
+                "date" => Carbon::now()->toIso8601String(),
+            ],
+            [
+                "level" => "alert",
+                "message" => "some message",
+                "context" => ["some" => "value"],
+                "date" => Carbon::now()->toIso8601String(),
+            ],
+        ], $json_decoded[0]['messages']);
+        unlink($tmp_storage_path . "/buffered_text_logs");//trash logged data
+
+        // 1. Only sequential duplicates are removed
+        $config->set('apideveloperio_logs.textlog.filtering.remove_duplicates', true);
+        $app[LoggerInterface::class]->alert("some message", ["some" => "value"]);
+        $app[LoggerInterface::class]->alert("some message", ["some" => "value"]);
+        $app[LoggerInterface::class]->info("some message", ["some" => "value"]);
+        $app[LoggerInterface::class]->alert("some message", ["some" => "value"]);
+        $listener->flush(); // imitate end of life
+
+        $this->assertFileExists($tmp_storage_path . "/buffered_text_logs");
+        $file_contents = file_get_contents($tmp_storage_path . "/buffered_text_logs");
+        $json_decoded  = json_decode("[" . trim($file_contents, ",") . "]", true);
+
+        $this->assertEquals([
+            [
+                "level" => "alert",
+                "message" => "some message",
+                "context" => ["some" => "value"],
+                "date" => Carbon::now()->toIso8601String(),
+            ],
+            [
+                "level" => "info",
+                "message" => "some message",
+                "context" => ["some" => "value"],
+                "date" => Carbon::now()->toIso8601String(),
+            ],
+            [
+                "level" => "alert",
+                "message" => "some message",
+                "context" => ["some" => "value"],
+                "date" => Carbon::now()->toIso8601String(),
+            ],
+        ], $json_decoded[0]['messages']);
+    }
+
     function test_it_catches_and_dumps_log_entries()
     {
         Carbon::setTestNow();

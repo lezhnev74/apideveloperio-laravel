@@ -125,11 +125,39 @@ class EventListener
             // Dump is performed upon application destruction (at the very end)
             if (count($this->buffer['messages'])) {
                 // no logs, no writing
+                $this->checkDuplicates();
                 $this->dumper->dump($this->buffer);
                 $this->buffer['messages'] = []; // flush written data
             }
         } catch (\Exception $e) {
             $this->fail($e);
+        }
+    }
+
+    /**
+     * Remove message duplicates. In some cases 3rd-party packages can emit logging events multiple times (laravel-bugsnag for example)
+     * And this logger will record such events multiple times which is wrong
+     *
+     * This option is off by default since it can remove legitimate log entries which happens to be the same
+     *
+     * @return void
+     */
+    private function checkDuplicates()
+    {
+        $duplicateRemovalEnabled = $this
+            ->config_repo
+            ->get('apideveloperio_logs.textlog.filtering.remove_duplicates', false);
+
+        if ($duplicateRemovalEnabled) {
+            for ($cur = 1, $count = count($this->buffer['messages']); $cur < $count; $cur++) {
+                $prev = $cur - 1;
+                if ($this->buffer['messages'][$prev] === $this->buffer['messages'][$cur]) {
+                    unset($this->buffer['messages'][$prev]);
+                }
+            }
+
+            // reindex
+            $this->buffer['messages'] = array_values($this->buffer['messages']);
         }
     }
 
